@@ -1,0 +1,1 @@
+-- CREATE INDEX idx_users_nip ON users (nip);
