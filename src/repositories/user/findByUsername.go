@@ -8,7 +8,7 @@ import (
 func (r *sUserRepository) FindByUsername(u string) (*entity.UserFindResult, error) {
 
 	var result entity.UserFindResult
-	err := r.DB.QueryRowx("SELECT id, username, password, email, role FROM users WHERE username = $1", u).StructScan(&result)
+	err := r.DB.Get(&result, "SELECT id, username, password, email, role FROM users WHERE username = $1", u)
 	if err != nil {
 		log.Println("Error sql on findByUsername")
 		return nil, err
