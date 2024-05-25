@@ -1,5 +1,7 @@
 package entity
 
+import "database/sql"
+
 type location struct {
 	Lat  float64 `json:"lat" validate:"required"`
 	Long float64 `json:"long" validate:"required"`
@@ -12,19 +14,32 @@ type MerchantCreateParams struct {
 	Location location `json:"location" validate:"required"`
 }
 
-// type MerchantSaveParams struct {
-// 	Name         string
-// 	Category     string
-// 	ImageUrl     string
-// 	LocationLat  float64
-// 	LocationLong float64
-// }
+type MerchantListParams struct {
+	MerchantId       string
+	Limit            int
+	Offset           int
+	Name             string
+	MerchantCategory string
+	CreatedAt        string
+}
 
-// type MerchantSaveResult struct {
-// 	Id           string  `db:"id"`
-// 	Name         string  `db:"name"`
-// 	Category     string  `db:"category"`
-// 	ImageUrl     string  `db:"image_url"`
-// 	LocationLat  float64 `db:"location_lat"`
-// 	LocationLong float64 `db:"location_long"`
-// }
+type MerchantFindAllResult struct {
+	MerchantId       string         `db:"id"`
+	Name             string         `db:"name"`
+	MerchantCategory string         `db:"category"`
+	ImageUrl         string         `db:"image_url"`
+	LocationLat      float64        `db:"location_lat"`
+	LocationLong     float64        `db:"location_long"`
+	CreatedAt        string         `db:"created_at"`
+	UpdatedAt        string         `db:"updated_at"`
+	DeletedAt        sql.NullString `db:"deleted_at"`
+}
+
+type MerchantListResult struct {
+	MerchantId       string   `json:"merchantId"`
+	Name             string   `json:"name"`
+	MerchantCategory string   `json:"merchantCategory"`
+	ImageUrl         string   `json:"imageUrl"`
+	Location         location `json:"location"`
+	CreatedAt        string   `json:"created_at"`
+}

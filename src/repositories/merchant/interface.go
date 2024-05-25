@@ -12,6 +12,7 @@ type sMerchantRepository struct {
 
 type MerchantRepository interface {
 	Save(*entity.MerchantCreateParams) (string, error)
+	FindAll(*entity.MerchantListParams) (*[]entity.MerchantFindAllResult, error)
 }
 
 func New(DB *sqlx.DB) MerchantRepository {

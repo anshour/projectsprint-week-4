@@ -11,6 +11,7 @@ type sMerchantUsecase struct {
 
 type MerchantUsecase interface {
 	Create(*entity.MerchantCreateParams) (string, error)
+	List(*entity.MerchantListParams) (*[]entity.MerchantListResult, error)
 }
 
 func New(merchantRepo repository.MerchantRepository) MerchantUsecase {

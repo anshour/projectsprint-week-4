@@ -12,4 +12,5 @@ func (i *V1Routes) MountMerchant() {
 	controller := merchantController.New(usecase)
 
 	i.Echo.POST("/admin/merchants", controller.Create)
+	i.Echo.GET("/admin/merchants", controller.List)
 }

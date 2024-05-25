@@ -22,6 +22,7 @@ type ErrorResponse struct {
 
 type iV1Merchant interface {
 	Create(c echo.Context) error
+	List(c echo.Context) error
 }
 
 func New(merchantUsecase merchantUsecase.MerchantUsecase) iV1Merchant {
