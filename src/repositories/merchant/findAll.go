@@ -29,13 +29,13 @@ func (r *sMerchantRepository) FindAll(filters *entity.MerchantListParams) (*[]en
 		query.AppendOrder("created_at", "ASC")
 	}
 
-	if filters.Limit == 0 {
-		query.AppendLimit(5)
-	} else {
-		query.AppendLimit(filters.Limit)
+	limit := filters.Limit
+	if limit == 0 {
+		limit = 5
 	}
+	query.AppendLimit(limit)
 
-	merchants := make([]entity.MerchantFindAllResult, filters.Limit)
+	merchants := make([]entity.MerchantFindAllResult, limit)
 	err := r.DB.Select(&merchants, query.BaseQuery, query.Params...)
 	if err != nil {
 		log.Printf("Error finding merchants: %s", err)
