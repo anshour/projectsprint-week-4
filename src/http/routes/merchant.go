@@ -13,4 +13,6 @@ func (i *V1Routes) MountMerchant() {
 
 	i.Echo.POST("/admin/merchants", controller.Create)
 	i.Echo.GET("/admin/merchants", controller.List)
+	i.Echo.POST("/admin/merchants/:merchantId/items", controller.CreateItem)
+
 }

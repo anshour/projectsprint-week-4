@@ -12,6 +12,7 @@ type sMerchantRepository struct {
 
 type MerchantRepository interface {
 	Save(*entity.MerchantCreateParams) (string, error)
+	SaveItem(*entity.MerchantItemCreateParams) (string, error)
 	FindAll(*entity.MerchantListParams) (*[]entity.MerchantFindAllResult, error)
 }
 
