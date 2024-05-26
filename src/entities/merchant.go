@@ -29,6 +29,27 @@ type MerchantListParams struct {
 	CreatedAt        string
 }
 
+type MerchantItemListParams struct {
+	MerchantId      string
+	ItemId          string
+	Name            string
+	ProductCategory string
+	CreatedAt       string
+	Limit           int
+	Offset          int
+}
+
+type MerchantItemListResult struct {
+	MerchantId      string `db:"merchant_id"` // This field is not included in json response
+	Id              string `json:"itemId" db:"id"`
+	Name            string `json:"name" db:"name"`
+	ProductCategory string `json:"productCategory" db:"category"`
+	ImageUrl        string `json:"imageUrl" db:"image_url"`
+	Price           int32  `json:"price" db:"price"`
+	CreatedAt       string `json:"created_at" db:"created_at"`
+	UpdatedAt       string `db:"updated_at"` // This field is not included in json response
+}
+
 type MerchantFindAllResult struct {
 	MerchantId       string  `db:"id"`
 	Name             string  `db:"name"`

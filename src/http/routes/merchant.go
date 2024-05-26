@@ -11,8 +11,10 @@ func (i *V1Routes) MountMerchant() {
 	usecase := merchantUsecase.New(repository)
 	controller := merchantController.New(usecase)
 
+	//TODO: ADD AUTH MIDLLEWARE
 	i.Echo.POST("/admin/merchants", controller.Create)
 	i.Echo.GET("/admin/merchants", controller.List)
 	i.Echo.POST("/admin/merchants/:merchantId/items", controller.CreateItem)
+	i.Echo.GET("/admin/merchants/:merchantId/items", controller.ListItem)
 
 }

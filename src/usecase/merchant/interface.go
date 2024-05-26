@@ -13,6 +13,7 @@ type MerchantUsecase interface {
 	Create(*entity.MerchantCreateParams) (string, error)
 	CreateItem(*entity.MerchantItemCreateParams) (string, error)
 	List(*entity.MerchantListParams) (*[]entity.MerchantListResult, error)
+	ListItem(*entity.MerchantItemListParams) (*[]entity.MerchantItemListResult, error)
 }
 
 func New(merchantRepo repository.MerchantRepository) MerchantUsecase {
