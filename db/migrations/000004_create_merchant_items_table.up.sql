@@ -13,5 +13,7 @@ CREATE TABLE IF NOT EXISTS merchant_items(
     FOREIGN KEY (merchant_id) REFERENCES merchants(id),
     category merchant_item_category NOT NULL,
     price INTEGER NOT NULL,
-    image_url VARCHAR(255) NOT NULL
+    image_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
