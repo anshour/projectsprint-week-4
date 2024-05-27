@@ -40,14 +40,12 @@ type MerchantItemListParams struct {
 }
 
 type MerchantItemListResult struct {
-	MerchantId      string `db:"merchant_id"` // This field is not included in json response
 	Id              string `json:"itemId" db:"id"`
 	Name            string `json:"name" db:"name"`
 	ProductCategory string `json:"productCategory" db:"category"`
 	ImageUrl        string `json:"imageUrl" db:"image_url"`
 	Price           int32  `json:"price" db:"price"`
 	CreatedAt       string `json:"createdAt" db:"created_at"`
-	UpdatedAt       string `db:"updated_at"` // This field is not included in json response
 }
 type MerchantItemMetaResult struct {
 	Limit   int `json:"limit"`
