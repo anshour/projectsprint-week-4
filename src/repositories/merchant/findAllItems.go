@@ -8,7 +8,7 @@ import (
 
 func (r *sMerchantRepository) FindAllItems(filters *entity.MerchantItemListParams) (*[]entity.MerchantItemListResult, error) {
 	query := &querybuilder.Query{
-		BaseQuery: "SELECT * FROM merchant_items WHERE true",
+		BaseQuery: "SELECT id, name, category, price, image_url, created_at FROM merchant_items WHERE true",
 	}
 
 	if filters.MerchantId != "" {
