@@ -25,6 +25,13 @@ func (uc *sMerchantController) Create(c echo.Context) error {
 		})
 	}
 
+	if err := validator.ValidateUrl(req.ImageUrl); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Message: err.Error(),
+			Status:  false,
+		})
+	}
+
 	merchantId, err := uc.merchantUsecase.Create(&req)
 
 	if err != nil {

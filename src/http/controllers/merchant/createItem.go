@@ -3,6 +3,7 @@ package merchantController
 import (
 	"log"
 	"net/http"
+	"projectsprintw4/src/constants"
 	entity "projectsprintw4/src/entities"
 	"projectsprintw4/src/utils/validator"
 
@@ -13,6 +14,20 @@ func (uc *sMerchantController) CreateItem(c echo.Context) error {
 	var req entity.MerchantItemCreateParams
 
 	if err := validator.BindValidate(c, &req); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Message: err.Error(),
+			Status:  false,
+		})
+	}
+
+	if err := validator.ValidateProductCategory(req.Category); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Message: err.Error(),
+			Status:  false,
+		})
+	}
+
+	if err := validator.ValidateUrl(req.ImageUrl); err != nil {
 		return c.JSON(http.StatusBadRequest, ErrorResponse{
 			Message: err.Error(),
 			Status:  false,
@@ -37,6 +52,9 @@ func (uc *sMerchantController) CreateItem(c echo.Context) error {
 
 	if err != nil {
 		log.Println(err.Error())
+		if err.Error() == constants.ErrNoRowsResultText {
+			return c.JSON(http.StatusNotFound, ErrorResponse{Message: constants.ErrNoRowsResultText})
+		}
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
 
