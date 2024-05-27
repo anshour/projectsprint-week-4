@@ -13,6 +13,7 @@ type sMerchantController struct {
 type SuccessResponse struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
+	Meta    interface{} `json:"meta"`
 }
 
 type ErrorResponse struct {

@@ -46,8 +46,13 @@ type MerchantItemListResult struct {
 	ProductCategory string `json:"productCategory" db:"category"`
 	ImageUrl        string `json:"imageUrl" db:"image_url"`
 	Price           int32  `json:"price" db:"price"`
-	CreatedAt       string `json:"created_at" db:"created_at"`
+	CreatedAt       string `json:"createdAt" db:"created_at"`
 	UpdatedAt       string `db:"updated_at"` // This field is not included in json response
+}
+type MerchantItemMetaResult struct {
+	Limit   int `json:"limit"`
+	Offsite int `json:"offsite"`
+	Total   int `json:"total"`
 }
 
 type MerchantFindAllResult struct {

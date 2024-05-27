@@ -48,8 +48,15 @@ func (uc *sMerchantController) ListItem(c echo.Context) error {
 		})
 	}
 
+	Meta := &entity.MerchantItemMetaResult{
+		Limit:   filters.Limit,
+		Offsite: filters.Offset,
+		Total:   len(*items),
+	}
+
 	return c.JSON(http.StatusOK, SuccessResponse{
 		Message: "Merchant items list",
 		Data:    items,
+		Meta:    Meta,
 	})
 }
