@@ -13,7 +13,7 @@ type sUserRepository struct {
 type UserRepository interface {
 	Save(*entity.UserSaveParam) (*entity.UserSaveResult, error)
 	FindByUsername(u string) (*entity.UserFindResult, error)
-	CheckUsernameExist(u string) (bool, error)
+	CheckDataExist(u string, e string) (bool, error)
 }
 
 func New(DB *sqlx.DB) UserRepository {

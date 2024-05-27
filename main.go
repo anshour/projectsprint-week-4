@@ -30,7 +30,7 @@ func main() {
 	})
 
 	v1 := &v1routes.V1Routes{
-		Echo: e.Group("/v1"),
+		Echo: e,
 		DB:   db,
 	}
 

@@ -6,7 +6,7 @@ import (
 )
 
 type V1Routes struct {
-	Echo *echo.Group
+	Echo *echo.Echo
 	DB   *sqlx.DB
 }
 

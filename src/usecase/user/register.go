@@ -9,7 +9,7 @@ import (
 
 func (u *sUserUsecase) Register(p *entity.UserSaveParam) (token string, err error) {
 
-	isExist, err := u.userRepo.CheckUsernameExist(p.Username)
+	isExist, err := u.userRepo.CheckDataExist(p.Username, p.Email)
 
 	if err != nil {
 		return "", err

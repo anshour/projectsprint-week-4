@@ -15,7 +15,7 @@ func (i *V1Routes) MountPurchase() {
 	controller := purchaseController.New(usecase)
 	println(controller)
 	//TODO: ADD AUTH MIDLLEWARE
-	i.Echo.POST("/merchants/nearby/:lat,long", func(c echo.Context) error {
+	i.Echo.POST("/merchants/nearby/:latlong", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	i.Echo.GET("/users/estimate", func(c echo.Context) error {
