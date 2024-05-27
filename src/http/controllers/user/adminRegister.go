@@ -30,7 +30,7 @@ func (uc *sUserController) AdminRegister(c echo.Context) error {
 
 	if err != nil {
 		if err == constants.ErrUsernameAlreadyExist {
-			return c.JSON(http.StatusBadRequest, ErrorResponse{Message: err.Error()})
+			return c.JSON(http.StatusConflict, ErrorResponse{Message: err.Error()})
 		}
 		if err, ok := err.(*pgconn.PgError); ok {
 			log.Println("pgsql err :", err.Error())

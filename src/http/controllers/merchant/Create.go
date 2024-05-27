@@ -18,6 +18,13 @@ func (uc *sMerchantController) Create(c echo.Context) error {
 			Status:  false,
 		})
 	}
+	if err := validator.ValidateCategoryMerchant(req.Category); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Message: err.Error(),
+			Status:  false,
+		})
+	}
+
 	merchantId, err := uc.merchantUsecase.Create(&req)
 
 	if err != nil {
