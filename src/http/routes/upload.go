@@ -6,12 +6,10 @@ import (
 )
 
 func (i *V1Routes) MountUpload() {
-	g := i.Echo.Group("")
 
 	upload := uploadController.New(&uploadController.V1Upload{
 		DB: i.DB,
 	})
-	g.Use(middleware.Authentication())
-	g.POST("/image", upload.UploadImage)
+	i.Echo.POST("/image", upload.UploadImage, middleware.Authentication())
 
 }
