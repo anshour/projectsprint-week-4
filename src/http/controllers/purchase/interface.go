@@ -2,6 +2,8 @@ package purchaseController
 
 import (
 	purchaseUsecase "projectsprintw4/src/usecase/purchase"
+
+	"github.com/labstack/echo/v4"
 )
 
 type sPurchaseController struct {
@@ -19,6 +21,7 @@ type ErrorResponse struct {
 }
 
 type iV1Purchase interface {
+	ListNearby(c echo.Context) error
 }
 
 func New(purchaseUsecase purchaseUsecase.PurchaseUsecase) iV1Purchase {
