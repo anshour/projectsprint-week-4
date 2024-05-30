@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	entity "projectsprintw4/src/entities"
+	formatTime "projectsprintw4/src/utils/time"
 	"strings"
 )
 
-func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*[]entity.ListNearbyMerchantResult, error) {
+func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error) {
 	baseQuery := `
     SELECT 
         merchant.id, merchant.name as merchant_name,
@@ -67,7 +68,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 
 	defer rows.Close()
 
-	merchantsMap := make(map[string]*entity.ListNearbyMerchantResult)
+	merchantsMap := make(map[string]*entity.ListNearbymerchantFinalResult)
 
 	for rows.Next() {
 		var merchant entity.ListNearbyMerchantResult
@@ -89,16 +90,37 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			return nil, err
 		}
 
-		if _, exists := merchantsMap[merchant.Id]; !exists {
-			merchantsMap[merchant.Id] = &merchant
+		merchant.CreatedAt, err = formatTime.FormatToISO8601WithNano(merchant.CreatedAt)
+		if err != nil {
+			log.Printf("Error formatting date: %s", err)
+			continue
 		}
 
-		if merchantItem.Name != "" {
-			merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
+		merchantItem.CreatedAt, err = formatTime.FormatToISO8601WithNano(merchantItem.CreatedAt)
+		if err != nil {
+			log.Printf("Error formatting date: %s", err)
+			continue
 		}
+
+		// if _, exists := merchantsMap[merchant.Id]; !exists {
+		// 	merchantsMap[merchant.Id] = &merchant
+		// }
+
+		if _, exists := merchantsMap[merchant.Id]; !exists {
+			merchantsMap[merchant.Id] = &entity.ListNearbymerchantFinalResult{
+				Merchant: merchant,
+				Items:    []entity.ListNearbyMerchantItemResult{},
+			}
+		}
+
+		merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
+
+		// if merchantItem.Name != "" {
+		// 	merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
+		// }
 	}
 
-	var merchants []entity.ListNearbyMerchantResult
+	var merchants []entity.ListNearbymerchantFinalResult
 	for _, merchant := range merchantsMap {
 		merchants = append(merchants, *merchant)
 	}

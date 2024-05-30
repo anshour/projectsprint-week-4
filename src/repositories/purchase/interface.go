@@ -11,7 +11,7 @@ type sPurchaseRepository struct {
 }
 
 type PurchaseRepository interface {
-	ListAllNearby(*entity.ListNearbyParams) (*[]entity.ListNearbyMerchantResult, error)
+	ListAllNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
 }
 
 func New(DB *sqlx.DB) PurchaseRepository {

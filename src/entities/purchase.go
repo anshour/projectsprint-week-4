@@ -11,11 +11,11 @@ type ListNearbyParams struct {
 
 type ListNearbyMerchantItemResult struct {
 	Id        string `json:"itemId" db:"id"`
+	Name      string `json:"name" db:"item_name"`
+	Category  string `json:"productCategory" db:"item_category"`
+	Price     string `json:"price" db:"item_price"`
 	ImageUrl  string `json:"imageUrl" db:"item_image_url"`
 	CreatedAt string `json:"createdAt" db:"item_created_at"`
-	Name      string `json:"name" db:"item_name"`
-	Price     string `json:"price" db:"item_price"`
-	Category  string `json:"productCategory" db:"item_category"`
 }
 
 type Location struct {
@@ -28,6 +28,11 @@ type ListNearbyMerchantResult struct {
 	MerchantCategory string `json:"merchantCategory" db:"category"`
 	ImageUrl         string `json:"imageUrl" db:"image_url"`
 	Location         Location
-	CreatedAt        string                         `db:"created_at"`
-	Items            []ListNearbyMerchantItemResult `json:"items"`
+	CreatedAt        string `db:"created_at"`
+	// Items            []ListNearbyMerchantItemResult `json:"items"`
+}
+
+type ListNearbymerchantFinalResult struct {
+	Merchant ListNearbyMerchantResult       `json:"merchant"`
+	Items    []ListNearbyMerchantItemResult `json:"items"`
 }

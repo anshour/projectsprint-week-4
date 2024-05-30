@@ -10,7 +10,7 @@ type sPurchaseUsecase struct {
 }
 
 type PurchaseUsecase interface {
-	ListNearby(*entity.ListNearbyParams) (*[]entity.ListNearbyMerchantResult, error)
+	ListNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
 }
 
 func New(purchaseRepo repository.PurchaseRepository) PurchaseUsecase {
