@@ -1,19 +1,11 @@
 package purchaseRepository
 
 import (
+	"fmt"
 	"log"
 	entity "projectsprintw4/src/entities"
 	querybuilder "projectsprintw4/src/utils/queryBuilder"
 )
-
-// SELECT
-// 			item.name as item_name, item.category as item_category,
-// 			item.price as item_price, merchant.category,
-// 			merchant.name, merchant.location_lat, merchant.created_at, merchant.updated_at,
-// 			merchant.location_long
-// 			FROM merchant_items item
-// 			JOIN merchants merchant ON item.merchant_id = merchant.id
-// 			WHERE true;`
 
 func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*[]entity.ListNearbyMerchantResult, error) {
 	baseQuery := `SELECT 
@@ -28,10 +20,9 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			item.created_at as item_created_at
 			FROM merchant_items item 
 			JOIN merchants merchant ON item.merchant_id = merchant.id
-			WHERE true;`
+			WHERE true`
 
 	query := &querybuilder.Query{
-		// BaseQuery: "SELECT * FROM merchants WHERE true",
 		BaseQuery: baseQuery,
 	}
 
@@ -52,7 +43,9 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		limit = 5
 	}
 	// query.AppendLimit(limit)
-	// merchants := make([]entity.ListNearbyMerchantResult, limit)
+
+	// Print the generated SQL query and arguments
+	fmt.Printf("SQL Query: %s\n", query)
 	rows, err := r.DB.Queryx(query.BaseQuery, query.Params...)
 	if err != nil {
 		log.Printf("Error finding merchants nearby: %s", err)
