@@ -22,6 +22,7 @@ type ErrorResponse struct {
 
 type iV1Purchase interface {
 	ListNearby(c echo.Context) error
+	UserEstimation(c echo.Context) error
 }
 
 func New(purchaseUsecase purchaseUsecase.PurchaseUsecase) iV1Purchase {
