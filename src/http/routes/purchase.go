@@ -20,7 +20,7 @@ func (i *V1Routes) MountPurchase() {
 	g := i.Echo.Group("/users")
 
 	g.Use(middleware.Authentication())
-	g.GET("/estimate", controller.UserEstimation)
+	g.POST("/estimate", controller.UserEstimation)
 
 	g.POST("/orders", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")

@@ -72,3 +72,15 @@ type MerchantListResult struct {
 	Location         location `json:"location"`
 	CreatedAt        string   `json:"created_at"`
 }
+
+type MerchantItem struct {
+	ItemId string `json:"itemId"`
+}
+
+type MerchantBindResult struct {
+	MerchantId string  `db:"merchant_id"`
+	Lat        float64 `db:"merchant_location_lat"`
+	Long       float64 `db:"merchant_location_long"`
+	ItemId     string  `db:"item_id"`
+	Price      int32   `db:"item_price"`
+}

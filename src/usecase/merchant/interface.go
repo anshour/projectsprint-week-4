@@ -11,7 +11,7 @@ type sMerchantUsecase struct {
 
 type MerchantUsecase interface {
 	Create(*entity.MerchantCreateParams) (string, error)
-	CreateItem(*entity.MerchantItemCreateParams) (string, error)
+	CreateItem(*entity.MerchantItemCreateParams) (*entity.MerchantItem, error)
 	List(*entity.MerchantListParams) (*[]entity.MerchantListResult, error)
 	ListItem(*entity.MerchantItemListParams) (*[]entity.MerchantItemListResult, error)
 }

@@ -1,9 +1,39 @@
 package purchaseUsecase
 
-import entity "projectsprintw4/src/entities"
+import (
+	entity "projectsprintw4/src/entities"
+)
 
 func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams) (*entity.UserEstimationResult, error) {
-	items, err := uc.purchaseRepo.UserEstimation(p)
 
-	return items, err
+	merchantIds := []string{}
+	itemIds := []string{}
+	listOrders := make(map[string]int32)
+	for _, order := range p.Orders {
+		// fmt.Printf("order: %s\n ", order.MerchantId)
+		merchantIds = append(merchantIds, order.MerchantId)
+		for _, item := range order.Items {
+			listOrders[item.ItemId] = item.Quantity
+			// fmt.Printf("item: %s\n ", item.ItemId)
+			itemIds = append(itemIds, item.ItemId)
+		}
+	}
+	params := &entity.UserEstimationRepoParams{
+		MerchantIds: merchantIds,
+		ItemIds:     itemIds,
+		Location:    p.Location,
+	}
+	items, err := uc.purchaseRepo.UserEstimation(params)
+
+	totalPrice := 0
+	for _, item := range items {
+		totalPrice = totalPrice + int(listOrders[item.ItemId])*int(item.Price)
+	}
+	println(totalPrice)
+	estimationData := &entity.UserEstimationResult{
+		TotalPrice:         totalPrice,
+		EstimationDelivery: 10,
+		EstimationId:       "",
+	}
+	return estimationData, err
 }

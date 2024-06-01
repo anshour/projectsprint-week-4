@@ -1,5 +1,3 @@
-
-
 CREATE TABLE IF NOT EXISTS estimations (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id uuid NOT NULL,

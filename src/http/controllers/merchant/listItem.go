@@ -54,7 +54,7 @@ func (uc *sMerchantController) ListItem(c echo.Context) error {
 		Total:   len(*items),
 	}
 
-	return c.JSON(http.StatusOK, SuccessResponse{
+	return c.JSON(http.StatusOK, SuccessResponseWithMeta{
 		Message: "Merchant items list",
 		Data:    items,
 		Meta:    Meta,

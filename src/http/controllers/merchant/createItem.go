@@ -57,11 +57,8 @@ func (uc *sMerchantController) CreateItem(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
-
 	return c.JSON(http.StatusCreated, SuccessResponse{
 		Message: "Merchant item created",
-		Data: map[string]any{
-			"itemId": itemId,
-		},
+		Data:    itemId,
 	})
 }
