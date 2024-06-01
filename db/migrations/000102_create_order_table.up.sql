@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS orders (
     FOREIGN KEY (merchant_id) REFERENCES merchants(id),
     detail jsonb NOT NULL,
     order_status status_order NOT NULL,
+    location_lat FLOAT NOT NULL,
+    location_long FLOAT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

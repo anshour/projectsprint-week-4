@@ -29,7 +29,6 @@ type ListNearbyMerchantResult struct {
 	ImageUrl         string `json:"imageUrl" db:"image_url"`
 	Location         Location
 	CreatedAt        string `db:"created_at"`
-	// Items            []ListNearbyMerchantItemResult `json:"items"`
 }
 
 type ListNearbymerchantFinalResult struct {
