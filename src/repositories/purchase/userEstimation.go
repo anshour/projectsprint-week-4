@@ -1,11 +1,10 @@
 package purchaseRepository
 
 import (
-	"log"
 	"projectsprintw4/src/constants"
 	entity "projectsprintw4/src/entities"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams, userId string) ([]*entity.MerchantBindResult, error) {
@@ -21,47 +20,39 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 		JOIN 
 			merchant_items mi ON m.id = mi.merchant_id
 		WHERE 
-			m.id IN (?)
-			AND mi.id IN (?)`
+			m.id = ANY($1)
+			AND mi.id = ANY($2)`
 
-	// Expand the slice into the query using sqlx.In
-	query, args, err := sqlx.In(query, p.MerchantIds, p.ItemIds)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// Rebind the query for the target database (PostgreSQL in this case)
-	query = r.DB.Rebind(query)
-
-	// Execute the query
 	var merchantItems []*entity.MerchantBindResult
-	err = r.DB.Select(&merchantItems, query, args...)
+	err := r.DB.Select(&merchantItems, query, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
+
 	if err != nil {
 		return nil, err
 	}
+
 	if len(merchantItems) < len(p.ItemIds) {
 		return nil, constants.ErrMissingMerchantItem
 	}
 
-	querySaveOrder := `INSERT INTO orders (user_id::UUID, order_status, location_lat, location_long) VALUES ($1,$2,$3,$4) RETURNING id`
+	querySaveOrder := `INSERT INTO orders (user_id, order_status, location_lat, location_long) VALUES ($1, $2, $3, $4) RETURNING id`
 	var orderId string
 
 	err = r.DB.QueryRowx(querySaveOrder, userId, constants.DRAFT, p.Location.Lat, p.Location.Long).Scan(&orderId)
 
 	if err != nil {
-		println("orderId", userId)
 		println("Error in saving to orders")
+		return nil, err
+	}
 
-		return nil, err
-	}
-	var id string
 	for _, item := range merchantItems {
-		querySaveMerchantItem := `INSERT INTO merchant_orders (order_id::UUID, merchant_id, item_id, item_price, quantity) VALUES ($1,$2,$3,$4) RETURNING id`
-		err = r.DB.QueryRowx(querySaveMerchantItem, orderId, item.MerchantId, item.ItemId, item.Price).Scan(&id)
-	}
-	if err != nil {
-		println("Error in saving to merchant_orders")
-		return nil, err
+		querySaveMerchantItem := `INSERT INTO merchant_orders (order_id, merchant_id, item_id, item_price, quantity) VALUES ($1, $2, $3, $4, $5)`
+		//BUG: MISSING ITEM QUANTITY
+		err := r.DB.QueryRowx(querySaveMerchantItem, orderId, item.MerchantId, item.ItemId, item.Price).Err()
+
+		if err != nil {
+			println("Error in saving to merchant_orders")
+			return nil, err
+		}
 	}
 
 	return merchantItems, nil
