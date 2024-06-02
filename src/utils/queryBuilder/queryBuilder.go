@@ -2,6 +2,8 @@ package querybuilder
 
 import (
 	"strconv"
+
+	"github.com/lib/pq"
 )
 
 type Query struct {
@@ -16,6 +18,11 @@ func (q *Query) nextParamIndex() string {
 func (q *Query) AppendCondition(column string, operator string, value interface{}) {
 	q.BaseQuery += " AND " + column + " " + operator + " " + q.nextParamIndex()
 	q.Params = append(q.Params, value)
+}
+
+func (q *Query) AppendWhereAny(column string, value interface{}) {
+	q.BaseQuery += " AND " + column + " = " + "ANY" + "(" + q.nextParamIndex() + ")"
+	q.Params = append(q.Params, pq.Array(value))
 }
 
 func (q *Query) AppendOrder(column string, direction string) {
