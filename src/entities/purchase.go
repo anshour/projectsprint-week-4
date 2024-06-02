@@ -9,6 +9,10 @@ type ListNearbyParams struct {
 	MerchantCategory string
 }
 
+type PurchaseOrderParams struct {
+	EstimationId string `json:"calculatedEstimateId" validate:"required"`
+}
+
 type ListNearbyMerchantItemResult struct {
 	Id        string `json:"itemId" db:"id"`
 	Name      string `json:"name" db:"item_name"`

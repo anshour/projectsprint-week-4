@@ -21,6 +21,8 @@ type ErrorResponse struct {
 }
 
 type iV1Purchase interface {
+	PurchaseOrder(c echo.Context) error
+	ListOrder(c echo.Context) error
 	ListNearby(c echo.Context) error
 	UserEstimation(c echo.Context) error
 }
