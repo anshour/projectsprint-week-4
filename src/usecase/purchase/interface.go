@@ -11,6 +11,7 @@ type sPurchaseUsecase struct {
 
 type PurchaseUsecase interface {
 	PurchaseOrder(estimationId string) (orderId string, err error)
+	ListOrder(*entity.ListOrderParams) (*[]entity.ListOrderResult, error)
 	ListNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
 	UserEstimation(*entity.UserEstimationParams, string) (*entity.UserEstimationResult, error)
 }

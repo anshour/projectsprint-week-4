@@ -11,8 +11,9 @@ type sPurchaseRepository struct {
 }
 
 type PurchaseRepository interface {
+	FindOrders(*entity.ListOrderParams) (*[]entity.ListOrderResult, error)
 	UpdateOrderStatus(orderId string, status string) (err error)
-	FindOrderByEstimationId(estimationId string) (orderId string, err error)
+	GetOrderIdByEstimationId(estimationId string) (orderId string, err error)
 	ListAllNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
 	UserEstimation(*entity.UserEstimationRepoParams, string) (*entity.UserEstimationResult, error)
 }

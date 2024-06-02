@@ -18,7 +18,6 @@ func (i *V1Routes) MountPurchase() {
 
 	g.Use(middleware.Authentication())
 	g.POST("/estimate", controller.UserEstimation)
-
 	g.POST("/orders", controller.PurchaseOrder)
 	g.GET("/orders", controller.ListOrder)
 

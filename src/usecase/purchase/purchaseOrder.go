@@ -5,7 +5,7 @@ import (
 )
 
 func (uc *sPurchaseUsecase) PurchaseOrder(estimationId string) (orderId string, err error) {
-	orderId, err = uc.purchaseRepo.FindOrderByEstimationId(estimationId)
+	orderId, err = uc.purchaseRepo.GetOrderIdByEstimationId(estimationId)
 	if orderId != "" {
 		err = uc.purchaseRepo.UpdateOrderStatus(orderId, constants.PURCHASED)
 	}
