@@ -35,3 +35,11 @@ type ListNearbymerchantFinalResult struct {
 	Merchant ListNearbyMerchantResult       `json:"merchant"`
 	Items    []ListNearbyMerchantItemResult `json:"items"`
 }
+
+type ItemOrders struct {
+	MerchantId string
+	ItemId     string
+	Price      string
+	Quantity   int32
+	OrderId    string
+}

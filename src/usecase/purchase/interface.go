@@ -11,7 +11,7 @@ type sPurchaseUsecase struct {
 
 type PurchaseUsecase interface {
 	ListNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
-	UserEstimation(*entity.UserEstimationParams) (*entity.UserEstimationResult, error)
+	UserEstimation(*entity.UserEstimationParams, string) (*entity.UserEstimationResult, error)
 }
 
 func New(purchaseRepo repository.PurchaseRepository) PurchaseUsecase {

@@ -4,7 +4,7 @@ import (
 	entity "projectsprintw4/src/entities"
 )
 
-func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams) (*entity.UserEstimationResult, error) {
+func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams, userId string) (*entity.UserEstimationResult, error) {
 
 	merchantIds := []string{}
 	itemIds := []string{}
@@ -23,7 +23,7 @@ func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams) (*ent
 		ItemIds:     itemIds,
 		Location:    p.Location,
 	}
-	items, err := uc.purchaseRepo.UserEstimation(params)
+	items, err := uc.purchaseRepo.UserEstimation(params, userId)
 
 	if err != nil {
 		return nil, err

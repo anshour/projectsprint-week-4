@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams) ([]*entity.MerchantBindResult, error) {
+func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams, userId string) ([]*entity.MerchantBindResult, error) {
 	query := `
 		SELECT 
 			m.id AS merchant_id,
@@ -41,6 +41,27 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams)
 	}
 	if len(merchantItems) < len(p.ItemIds) {
 		return nil, constants.ErrMissingMerchantItem
+	}
+
+	querySaveOrder := `INSERT INTO orders (user_id::UUID, order_status, location_lat, location_long) VALUES ($1,$2,$3,$4) RETURNING id`
+	var orderId string
+
+	err = r.DB.QueryRowx(querySaveOrder, userId, constants.DRAFT, p.Location.Lat, p.Location.Long).Scan(&orderId)
+
+	if err != nil {
+		println("orderId", userId)
+		println("Error in saving to orders")
+
+		return nil, err
+	}
+	var id string
+	for _, item := range merchantItems {
+		querySaveMerchantItem := `INSERT INTO merchant_orders (order_id::UUID, merchant_id, item_id, item_price, quantity) VALUES ($1,$2,$3,$4) RETURNING id`
+		err = r.DB.QueryRowx(querySaveMerchantItem, orderId, item.MerchantId, item.ItemId, item.Price).Scan(&id)
+	}
+	if err != nil {
+		println("Error in saving to merchant_orders")
+		return nil, err
 	}
 
 	return merchantItems, nil

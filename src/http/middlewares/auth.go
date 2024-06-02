@@ -36,14 +36,13 @@ func Authentication() echo.MiddlewareFunc {
 			token := tokenParts[1]
 
 			payload, err := jwt.Verify(token)
-
 			if err != nil {
 				return c.JSON(http.StatusUnauthorized, ErrorResponse{
 					Status:  false,
 					Message: "Invalid Authorization Header",
 				})
 			}
-
+			println("user: ", payload.UserId)
 			c.Set("userId", payload.UserId)
 			c.Set("role", payload.Role)
 
