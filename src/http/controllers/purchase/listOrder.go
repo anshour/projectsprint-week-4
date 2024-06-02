@@ -18,7 +18,7 @@ func (uc *sPurchaseController) ListOrder(c echo.Context) error {
 
 	//THIS IS THE FILTER BY USER REQUEST
 	filters.MerchantId = c.QueryParam("merchantId")
-	filters.Category = c.QueryParam("merchantCategory")
+	filters.MerchantCategory = c.QueryParam("merchantCategory")
 	filters.Name = c.QueryParam("name")
 
 	if limitStr := c.QueryParam("limit"); limitStr != "" {

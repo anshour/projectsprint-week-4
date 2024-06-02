@@ -14,23 +14,27 @@ type PurchaseOrderParams struct {
 }
 
 type ListOrderParams struct {
-	UserId     string
-	Status     string
-	MerchantId string
-	Name       string
-	Category   string
-	Limit      int
-	Offset     int
+	UserId           string
+	Status           string
+	MerchantId       string
+	Name             string
+	MerchantCategory string
+	Limit            int
+	Offset           int
 }
 
 type ListOrderResult struct {
-	OrderId  string                        `json:"orderId"`
-	Merchant ListOrderResultMerchantDetail `json:"merchant"`
+	OrderId      string        `json:"orderId"`
+	OrderDetails []OrderDetail `json:"orders"`
 }
 
-type ListOrderResultMerchantDetail struct {
-	Id               string                 `json:"merchantId"`
+type OrderDetail struct {
+	MerchantDetail OrderDetailMerchant `json:"merchant"`
+}
+
+type OrderDetailMerchant struct {
 	Name             string                 `json:"name"`
+	MerchantId       string                 `json:"merchantId"`
 	MerchantCategory string                 `json:"merchantCategory"`
 	ImageUrl         string                 `json:"imageUrl"`
 	Location         location               `json:"location"`
@@ -38,8 +42,27 @@ type ListOrderResultMerchantDetail struct {
 	Items            []ListOrderResultItems `json:"items"`
 }
 
+type MerchantOrderQueryResult struct {
+	Id                   string
+	OrderId              string
+	MerchantId           string
+	MerchantName         string
+	MerchantCategory     string
+	MerchantImageUrl     string
+	MerchantLocationLat  string
+	MerchantLocationLong string
+	MerchantCreatedAt    string
+	ItemId               string
+	ItemName             string
+	ItemCategory         string
+	ItemPrice            int32
+	ItemImageUrl         string
+	ItemCreatedAt        string
+	Quantity             int32
+}
+
 type ListOrderResultItems struct {
-	Id              string `json:"itemId"`
+	ItemId          string `json:"itemId"`
 	Name            string `json:"name"`
 	ProductCategory string `json:"productCategory" `
 	ImageUrl        string `json:"imageUrl"`
