@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS mechant_orders CASCADE;

@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS merhcant_item_orders CASCADE;
