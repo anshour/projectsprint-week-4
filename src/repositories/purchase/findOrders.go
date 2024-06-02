@@ -76,16 +76,13 @@ func (r *sPurchaseRepository) FindOrders(filters *entity.ListOrderParams) (*[]en
 	}
 
 	if filters.Name != "" {
-		//TODO: HANDLE ORWHERE
-		// query.AppendCondition("m.name", "ILIKE", "%"+filters.Name+"%")
-		// query.AppendCondition("mi.name", "ILIKE", "%"+filters.Name+"%")
+		merchantOrderQuery.AppendOrWhere("m.name", "ILIKE", "%"+filters.Name+"%", "mi.name", "ILIKE", "%"+filters.Name+"%")
 	}
 
 	if filters.MerchantCategory != "" {
 		merchantOrderQuery.AppendCondition("m.category", "=", filters.MerchantCategory)
 	}
 
-	//TODO: USE GET
 	rows, err = r.DB.Queryx(merchantOrderQuery.BaseQuery, merchantOrderQuery.Params...)
 	if err != nil {
 		log.Printf("Error finding order detail (merchant_orders): %s", err)
