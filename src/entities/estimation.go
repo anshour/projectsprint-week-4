@@ -16,13 +16,14 @@ type UserEstimationParams struct {
 }
 
 type UserEstimationRepoParams struct {
-	MerchantIds []string
-	ItemIds     []string
-	Location    location
+	MerchantIds     []string
+	ItemIds         []string
+	ItemQuantityMap map[string]int32
+	Location        location
 }
 
 type UserEstimationResult struct {
-	TotalPrice         int    `json:"totalPrice"`
+	TotalPrice         int32  `json:"totalPrice"`
 	EstimationDelivery int32  `json:"estimatedDeliveryTimeInMinutes"`
 	EstimationId       string `json:"calculatedEstimateId"`
 }
