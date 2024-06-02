@@ -12,7 +12,7 @@ type sPurchaseRepository struct {
 
 type PurchaseRepository interface {
 	ListAllNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
-	UserEstimation(*entity.UserEstimationRepoParams, string) ([]*entity.MerchantBindResult, error)
+	UserEstimation(*entity.UserEstimationRepoParams, string) (*entity.UserEstimationResult, error)
 }
 
 func New(DB *sqlx.DB) PurchaseRepository {
