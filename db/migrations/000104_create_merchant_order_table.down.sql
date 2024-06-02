@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS mechant_orders CASCADE;
+DROP TABLE IF EXISTS merchant_orders CASCADE;

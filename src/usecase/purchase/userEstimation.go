@@ -25,11 +25,15 @@ func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams) (*ent
 	}
 	items, err := uc.purchaseRepo.UserEstimation(params)
 
+	if err != nil {
+		return nil, err
+	}
+
 	totalPrice := 0
 	for _, item := range items {
 		totalPrice = totalPrice + int(listOrders[item.ItemId])*int(item.Price)
 	}
-	println(totalPrice)
+
 	estimationData := &entity.UserEstimationResult{
 		TotalPrice:         totalPrice,
 		EstimationDelivery: 10,
