@@ -19,7 +19,7 @@ func (uc *sPurchaseController) UserEstimation(c echo.Context) error {
 	}
 	UserId, _ := c.Get("userId").(string)
 	data, err := uc.purchaseUsecase.UserEstimation(&req, UserId)
-	println("userId: ", &UserId)
+
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Status:  false,
