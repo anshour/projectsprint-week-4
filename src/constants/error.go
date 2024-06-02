@@ -10,6 +10,7 @@ var ErrNotFound = errors.New("no row affected")
 var ErrConflict = errors.New("error conflict")
 var ErrInternalServer = errors.New("errror checking row affected")
 var ErrWrongPassword = errors.New("wrong password verification")
+var ErrEmptyUserId = errors.New("Error Empty user id")
 var ErrUsernameAlreadyExist = errors.New("username or email already exist")
 var ErrMissingMerchantItem = errors.New("one of merchant or item not exist")
 var ErrNoRowsResultText = "sql: no rows in result set"

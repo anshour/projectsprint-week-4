@@ -37,11 +37,16 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 	querySaveOrder := `INSERT INTO orders (user_id, order_status, location_lat, location_long) VALUES ($1, $2, $3, $4) RETURNING id`
 
 	var orderId string
-	err = r.DB.QueryRowx(querySaveOrder, userId, constants.DRAFT, p.Location.Lat, p.Location.Long).Scan(&orderId)
+	if userId != "" {
+		err = r.DB.QueryRowx(querySaveOrder, userId, constants.DRAFT, p.Location.Lat, p.Location.Long).Scan(&orderId)
 
-	if err != nil {
-		println("Error in saving to orders")
-		return nil, err
+		if err != nil {
+			println("Error in saving to orders")
+			return nil, err
+		}
+	} else {
+		println(constants.ErrEmptyUserId)
+		return nil, constants.ErrEmptyUserId
 	}
 
 	var totalPrice int32

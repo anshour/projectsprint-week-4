@@ -9,20 +9,24 @@ import (
 )
 
 func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error) {
+
 	baseQuery := `
-    SELECT 
-        merchant.id, merchant.name as merchant_name,
-        merchant.category as merchant_category, merchant.location_lat, 
-        merchant.location_long, merchant.image_url,
-        merchant.created_at as merchant_created_at,
-        item.name as item_name,  
-        item.category as item_category,
-        item.price as item_price, 
-        item.image_url as item_image_url,
-        item.created_at as item_created_at
-    FROM merchant_items item 
-    JOIN merchants merchant ON item.merchant_id = merchant.id
-    WHERE true`
+	SELECT 
+		merchant.id, merchant.name as merchant_name,
+		merchant.category as merchant_category, merchant.location_lat, 
+		merchant.location_long, merchant.image_url,
+		merchant.created_at as merchant_created_at,
+		item.name as item_name,  
+		item.category as item_category,
+		item.price as item_price, 
+		item.image_url as item_image_url,
+		item.created_at as item_created_at
+	FROM merchants merchant 
+	JOIN merchant_items item ON item.merchant_id = merchant.id
+	WHERE 
+	merchant.id IN `
+
+	clauseQuery := `SELECT id FROM merchants WHERE true `
 
 	conditions := []string{}
 	args := []interface{}{}
@@ -47,20 +51,23 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 	}
 
 	if len(conditions) > 0 {
-		baseQuery += " AND " + strings.Join(conditions, " AND ")
+		clauseQuery += " AND " + strings.Join(conditions, " AND ")
 	}
+
+	clauseQuery += " ORDER BY id" // Correctly place ORDER BY before LIMIT
 
 	limit := filters.Limit
 	if limit == 0 {
 		limit = 5
 	}
-	baseQuery += fmt.Sprintf(" LIMIT $%d", argCounter)
+	clauseQuery += fmt.Sprintf(" LIMIT $%d", argCounter)
 	args = append(args, limit)
 
+	finalQuery := baseQuery + `( ` + clauseQuery + ` );`
 	// Print the generated SQL query and arguments
-	fmt.Printf("SQL Query: %s\n", baseQuery)
+	fmt.Printf("SQL Query: %s\n", finalQuery)
 	fmt.Printf("Arguments: %v\n", args)
-	rows, err := r.DB.Queryx(baseQuery, args...)
+	rows, err := r.DB.Queryx(finalQuery, args...)
 	if err != nil {
 		log.Printf("Error finding merchants nearby: %s", err)
 		return nil, err
