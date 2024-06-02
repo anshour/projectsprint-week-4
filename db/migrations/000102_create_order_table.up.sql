@@ -1,7 +1,8 @@
 
 CREATE TYPE status_order AS ENUM (
   'DRAFT',
-  'CREATED'
+  'CREATED',
+  'PURCHASED'
 );
 
 CREATE TABLE IF NOT EXISTS orders (
