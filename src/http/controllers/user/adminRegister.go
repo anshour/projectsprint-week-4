@@ -20,6 +20,10 @@ func (uc *sUserController) AdminRegister(c echo.Context) error {
 			Status:  false,
 		})
 	}
+	err := validator.ValidateEmail((req.Email))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{Message: err.Error()})
+	}
 
 	token, err := uc.userUsecase.Register(&entity.UserSaveParam{
 		Username: req.Username,
