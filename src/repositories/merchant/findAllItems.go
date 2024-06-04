@@ -39,6 +39,12 @@ func (r *sMerchantRepository) FindAllItems(filters *entity.MerchantItemListParam
 	}
 	query.AppendLimit(limit)
 
+	offset := filters.Offset
+	if filters.Offset == 0 {
+		offset = 0
+	}
+	query.AppendOffset(offset)
+
 	items := make([]entity.MerchantItemListResult, limit)
 	err := r.DB.Select(&items, query.BaseQuery, query.Params...)
 	if err != nil {

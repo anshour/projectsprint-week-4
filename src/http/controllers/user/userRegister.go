@@ -45,10 +45,7 @@ func (uc *sUserController) UserRegister(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, SuccessResponse{
-		Message: "User created",
-		Data: map[string]any{
-			"token": token,
-		},
+	return c.JSON(http.StatusCreated, map[string]any{
+		"token": token,
 	})
 }

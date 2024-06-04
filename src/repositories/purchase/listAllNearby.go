@@ -5,6 +5,7 @@ import (
 	"log"
 	entity "projectsprintw4/src/entities"
 	formatTime "projectsprintw4/src/utils/time"
+	"strconv"
 	"strings"
 )
 
@@ -62,6 +63,13 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 	}
 	clauseQuery += fmt.Sprintf(" LIMIT $%d", argCounter)
 	args = append(args, limit)
+
+	if filters.Offset == 0 {
+		filters.Offset = 0
+	} else {
+		baseQuery += " OFFSET $" + strconv.Itoa(len(args)+1)
+		args = append(args, filters.Offset)
+	}
 
 	finalQuery := baseQuery + `( ` + clauseQuery + ` );`
 	// Print the generated SQL query and arguments

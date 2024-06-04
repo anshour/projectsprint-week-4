@@ -26,8 +26,10 @@ func (uc *sPurchaseController) UserEstimation(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, SuccessResponse{
-		Message: "Estimation",
-		Data:    data,
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"totalPrice":                     data.TotalPrice,
+		"estimatedDeliveryTimeInMinutes": data.EstimationDelivery,
+		"calculatedEstimateId":           data.EstimationId,
 	})
 }

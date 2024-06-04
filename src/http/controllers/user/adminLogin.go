@@ -44,10 +44,7 @@ func (uc *sUserController) AdminLogin(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, SuccessResponse{
-		Message: "Login success",
-		Data: map[string]any{
-			"token": token,
-		},
+	return c.JSON(http.StatusOK, map[string]any{
+		"token": token,
 	})
 }

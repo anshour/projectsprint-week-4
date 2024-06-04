@@ -48,9 +48,9 @@ type MerchantItemListResult struct {
 	CreatedAt       string `json:"createdAt" db:"created_at"`
 }
 type MerchantItemMetaResult struct {
-	Limit   int `json:"limit"`
-	Offsite int `json:"offsite"`
-	Total   int `json:"total"`
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+	Total  int `json:"total"`
 }
 
 type MerchantFindAllResult struct {
@@ -70,7 +70,7 @@ type MerchantListResult struct {
 	MerchantCategory string   `json:"merchantCategory"`
 	ImageUrl         string   `json:"imageUrl"`
 	Location         location `json:"location"`
-	CreatedAt        string   `json:"created_at"`
+	CreatedAt        string   `json:"createdAt"`
 }
 
 type MerchantItem struct {

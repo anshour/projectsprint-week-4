@@ -44,10 +44,7 @@ func (uc *sUserController) AdminRegister(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, SuccessResponse{
-		Message: "Admin created",
-		Data: map[string]any{
-			"token": token,
-		},
+	return c.JSON(http.StatusCreated, map[string]any{
+		"token": token,
 	})
 }
