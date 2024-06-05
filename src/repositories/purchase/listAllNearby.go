@@ -91,6 +91,11 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 
 	merchantsMap := make(map[string]*entity.ListNearbymerchantFinalResult)
 
+	hasRows := rows.Next()
+	if !hasRows {
+		fmt.Println("No data found")
+		return &[]entity.ListNearbymerchantFinalResult{}, nil
+	}
 	for rows.Next() {
 		var merchant entity.ListNearbyMerchantResult
 		var merchantItem entity.ListNearbyMerchantItemResult
