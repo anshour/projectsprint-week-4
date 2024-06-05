@@ -81,8 +81,8 @@ type ListNearbyMerchantItemResult struct {
 }
 
 type Location struct {
-	LocationLat  string `json:"lat" db:"location_lat"`
-	LocationLong string `json:"long" db:"location_long"`
+	LocationLat  float64 `json:"lat" db:"location_lat"`
+	LocationLong float64 `json:"long" db:"location_long"`
 }
 
 type ListNearbyMerchantResult struct {
