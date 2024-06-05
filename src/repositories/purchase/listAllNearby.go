@@ -17,6 +17,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		merchant.category as merchant_category, merchant.location_lat, 
 		merchant.location_long, merchant.image_url,
 		merchant.created_at as merchant_created_at,
+		item.id as item_id,
 		item.name as item_name,  
 		item.category as item_category,
 		item.price as item_price, 
@@ -27,7 +28,11 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 	WHERE 
 	merchant.id IN `
 
-	clauseQuery := `SELECT id FROM merchants WHERE true `
+	clauseQuery := `SELECT id FROM merchants WHERE EXISTS (
+		SELECT 1 
+		FROM merchant_items 
+		WHERE merchant_items.merchant_id = merchants.id
+	) AND true`
 
 	conditions := []string{}
 	args := []interface{}{}
@@ -72,6 +77,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 	}
 
 	finalQuery := baseQuery + `( ` + clauseQuery + ` );`
+
 	// Print the generated SQL query and arguments
 	fmt.Printf("SQL Query: %s\n", finalQuery)
 	fmt.Printf("Arguments: %v\n", args)
@@ -97,6 +103,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			&merchant.Location.LocationLong,
 			&merchant.ImageUrl,
 			&merchant.CreatedAt,
+			&merchantItem.Id,
 			&merchantItem.Name,
 			&merchantItem.Category,
 			&merchantItem.Price,
@@ -117,10 +124,6 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			continue
 		}
 
-		// if _, exists := merchantsMap[merchant.Id]; !exists {
-		// 	merchantsMap[merchant.Id] = &merchant
-		// }
-
 		if _, exists := merchantsMap[merchant.Id]; !exists {
 			merchantsMap[merchant.Id] = &entity.ListNearbymerchantFinalResult{
 				Merchant: merchant,
@@ -130,9 +133,6 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 
 		merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
 
-		// if merchantItem.Name != "" {
-		// 	merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
-		// }
 	}
 
 	var merchants []entity.ListNearbymerchantFinalResult

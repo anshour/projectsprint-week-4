@@ -29,15 +29,17 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 		return nil, err
 	}
 	userCurrentLoc := haversine.Coord{Lat: userLat, Lon: userLong}
+	fmt.Printf("lat %f", userCurrentLoc)
 
 	merchantNearby := make([]entity.ListNearbymerchantFinalResult, 0, p.Limit)
 	for _, merchant := range *items {
 		merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
 		_, km := haversine.Distance(userCurrentLoc, merchantLoc)
+		fmt.Printf("km %f", km)
 
 		if km < 5 {
 			merchantNearby = append(merchantNearby, merchant)
 		}
 	}
-	return &merchantNearby, nil
+	return items, nil
 }
