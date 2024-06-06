@@ -79,8 +79,8 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 	finalQuery := baseQuery + `( ` + clauseQuery + ` );`
 
 	// Print the generated SQL query and arguments
-	fmt.Printf("SQL Query: %s\n", finalQuery)
-	fmt.Printf("Arguments: %v\n", args)
+	// fmt.Printf("SQL Query: %s\n", finalQuery)
+	// fmt.Printf("Arguments: %v\n", args)
 	rows, err := r.DB.Queryx(finalQuery, args...)
 	if err != nil {
 		log.Printf("Error finding merchants nearby: %s", err)

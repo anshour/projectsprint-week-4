@@ -11,7 +11,6 @@ import (
 
 func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error) {
 	items, err := uc.purchaseRepo.ListAllNearby(p)
-
 	if err != nil {
 		empty := make([]entity.ListNearbymerchantFinalResult, 0)
 		return &empty, err
@@ -29,17 +28,17 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 		return nil, err
 	}
 	userCurrentLoc := haversine.Coord{Lat: userLat, Lon: userLong}
-	fmt.Printf("lat %f", userCurrentLoc)
+	fmt.Printf("lat %f \n", userCurrentLoc)
 
 	merchantNearby := make([]entity.ListNearbymerchantFinalResult, 0, p.Limit)
 	for _, merchant := range *items {
 		merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
 		_, km := haversine.Distance(userCurrentLoc, merchantLoc)
-		fmt.Printf("km %f", km)
+		fmt.Printf("km %f\n", km)
 
 		if km < 5 {
 			merchantNearby = append(merchantNearby, merchant)
 		}
 	}
-	return items, nil
+	return &merchantNearby, nil
 }
