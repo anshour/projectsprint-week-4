@@ -20,6 +20,12 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
+type SuccessResponseWithMeta struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+	Meta    interface{} `json:"meta"`
+}
+
 type iV1Purchase interface {
 	PurchaseOrder(c echo.Context) error
 	ListOrder(c echo.Context) error

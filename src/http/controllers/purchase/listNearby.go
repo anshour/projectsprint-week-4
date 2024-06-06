@@ -4,6 +4,7 @@ import (
 	"net/http"
 	entity "projectsprintw4/src/entities"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -40,6 +41,14 @@ func (uc *sPurchaseController) ListNearby(c echo.Context) error {
 			Message: "Invalid value for 'lat,long'",
 		})
 	}
+	parts := strings.Split(latlong, ",")
+
+	if len(parts) < 2 {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Status:  false,
+			Message: "Invalid value for 'lat,long'",
+		})
+	}
 
 	filters.LatLong = latlong
 	filters.MerchantId = c.Param("merchantId")
@@ -55,8 +64,15 @@ func (uc *sPurchaseController) ListNearby(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, SuccessResponse{
+	Meta := &entity.MerchantItemMetaResult{
+		Limit:  filters.Limit,
+		Offset: filters.Offset,
+		Total:  len(*list),
+	}
+
+	return c.JSON(http.StatusOK, SuccessResponseWithMeta{
 		Message: "Merchant Nearby list",
 		Data:    list,
+		Meta:    Meta,
 	})
 }

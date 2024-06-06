@@ -2,12 +2,17 @@ package purchaseUsecase
 
 import (
 	"fmt"
+	"math"
 	entity "projectsprintw4/src/entities"
 	"strconv"
 	"strings"
 
 	"github.com/umahmood/haversine"
 )
+
+type Point struct {
+	X, Y float64
+}
 
 func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error) {
 	items, err := uc.purchaseRepo.ListAllNearby(p)
@@ -28,16 +33,34 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 		return nil, err
 	}
 	userCurrentLoc := haversine.Coord{Lat: userLat, Lon: userLong}
-	fmt.Printf("lat %f \n", userCurrentLoc)
 
 	merchantNearby := make([]entity.ListNearbymerchantFinalResult, 0, p.Limit)
-	for _, merchant := range *items {
-		merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
-		_, km := haversine.Distance(userCurrentLoc, merchantLoc)
-		fmt.Printf("km %f\n", km)
+	visited := make(map[int]bool)
+	currentLoc := userCurrentLoc
+	for len(*items) > len(visited) {
+		nearest := -1
+		nearestDist := math.MaxFloat64
 
-		if km < 5 {
-			merchantNearby = append(merchantNearby, merchant)
+		for i, merchant := range *items {
+			if visited[i] {
+				continue
+			}
+			merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
+			_, dist := haversine.Distance(currentLoc, merchantLoc)
+			fmt.Printf("km %f\n", dist)
+			fmt.Printf("neearest dist %f\n", nearestDist)
+			if dist < nearestDist {
+				nearest = i
+				nearestDist = dist
+				merchantNearby = append(merchantNearby, merchant)
+			}
+
+			if nearest == -1 {
+				break
+			}
+
+			visited[nearest] = true
+			currentLoc = merchantLoc
 		}
 	}
 	return &merchantNearby, nil

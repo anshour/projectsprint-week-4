@@ -12,7 +12,7 @@ func (i *V1Routes) MountPurchase() {
 	usecase := purchaseUsecase.New(repository)
 	controller := purchaseController.New(usecase)
 
-	i.Echo.GET("/merchants/nearby/:latlong", controller.ListNearby)
+	i.Echo.GET("/merchants/nearby/:latlong", controller.ListNearby, middleware.Authentication())
 
 	g := i.Echo.Group("/users")
 
