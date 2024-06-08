@@ -42,7 +42,6 @@ func Authentication() echo.MiddlewareFunc {
 					Message: "Invalid Authorization Header",
 				})
 			}
-			println("user: ", payload.UserId)
 			c.Set("userId", payload.UserId)
 			c.Set("role", payload.Role)
 

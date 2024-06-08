@@ -1,12 +1,13 @@
 package entity
 
 type ListNearbyParams struct {
-	LatLong          string
 	MerchantId       string
 	Limit            int
 	Offset           int
 	Name             string
 	MerchantCategory string
+	Lat              float64
+	Long             float64
 }
 
 type PurchaseOrderParams struct {

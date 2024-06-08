@@ -1,6 +1,7 @@
 package purchaseController
 
 import (
+	"fmt"
 	"net/http"
 	entity "projectsprintw4/src/entities"
 	"strconv"
@@ -50,7 +51,24 @@ func (uc *sPurchaseController) ListNearby(c echo.Context) error {
 		})
 	}
 
-	filters.LatLong = latlong
+	userLat, err := strconv.ParseFloat(parts[0], 64)
+	if err != nil {
+		fmt.Println("Error parsing to float lat:", err)
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Status:  false,
+			Message: "Invalid value for 'lat,long'",
+		})
+	}
+	userLong, err := strconv.ParseFloat(parts[1], 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Status:  false,
+			Message: "Invalid value for 'lat,long'",
+		})
+	}
+
+	filters.Lat = userLat
+	filters.Long = userLong
 	filters.MerchantId = c.Param("merchantId")
 	filters.Name = c.QueryParam("name")
 	filters.MerchantCategory = c.QueryParam("merchantCategory")
@@ -58,6 +76,7 @@ func (uc *sPurchaseController) ListNearby(c echo.Context) error {
 	list, err := uc.purchaseUsecase.ListNearby(filters)
 
 	if err != nil {
+		println(err.Error())
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Status:  false,
 			Message: err.Error(),

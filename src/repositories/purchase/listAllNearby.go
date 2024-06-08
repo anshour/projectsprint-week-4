@@ -64,7 +64,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 
 	limit := filters.Limit
 	if limit == 0 {
-		limit = 5
+		limit = 1000
 	}
 	clauseQuery += fmt.Sprintf(" LIMIT $%d", argCounter)
 	args = append(args, limit)
