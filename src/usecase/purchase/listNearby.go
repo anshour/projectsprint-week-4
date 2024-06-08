@@ -1,10 +1,7 @@
 package purchaseUsecase
 
 import (
-	"math"
 	entity "projectsprintw4/src/entities"
-
-	"github.com/umahmood/haversine"
 )
 
 type Point struct {
@@ -18,41 +15,41 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 		return &empty, err
 	}
 
-	userCurrentLoc := haversine.Coord{Lat: p.Lat, Lon: p.Long}
+	// userCurrentLoc := haversine.Coord{Lat: p.Lat, Lon: p.Long}
 
-	nearestMerchant := make([]entity.ListNearbymerchantFinalResult, 0, p.Limit)
-	var merchantNearby []entity.ListNearbymerchantFinalResult
-	visited := make(map[int]bool)
-	currentLoc := userCurrentLoc
-	for len(*items) > len(visited) {
-		nearest := -1
-		nearestDist := math.MaxFloat64
+	// nearestMerchant := make([]entity.ListNearbymerchantFinalResult, 0, p.Limit)
+	// var merchantNearby []entity.ListNearbymerchantFinalResult
+	// visited := make(map[int]bool)
+	// currentLoc := userCurrentLoc
+	// for len(*items) > len(visited) {
+	// 	nearest := -1
+	// 	nearestDist := math.MaxFloat64
 
-		for i, merchant := range *items {
-			if visited[i] {
-				continue
-			}
-			merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
-			_, dist := haversine.Distance(currentLoc, merchantLoc)
-			if dist < nearestDist {
-				println("merchant: ", merchant.Merchant.Id)
-				nearest = i
-				nearestDist = dist
-				merchantNearby = append(merchantNearby, merchant)
-			}
+	// 	for i, merchant := range *items {
+	// 		if visited[i] {
+	// 			continue
+	// 		}
+	// 		merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
+	// 		_, dist := haversine.Distance(currentLoc, merchantLoc)
+	// 		if dist < nearestDist {
+	// 			println("merchant: ", merchant.Merchant.Id)
+	// 			nearest = i
+	// 			nearestDist = dist
+	// 			merchantNearby = append(merchantNearby, merchant)
+	// 		}
 
-			if nearest == -1 {
-				break
-			}
+	// 		if nearest == -1 {
+	// 			break
+	// 		}
 
-			visited[nearest] = true
-			currentLoc = merchantLoc
-		}
+	// 		visited[nearest] = true
+	// 		currentLoc = merchantLoc
+	// 	}
 
-	}
-	for i := len(merchantNearby) - 1; i >= 0; i-- {
-		nearestMerchant = append(nearestMerchant, merchantNearby[i])
-	}
+	// }
+	// for i := len(merchantNearby) - 1; i >= 0; i-- {
+	// 	nearestMerchant = append(nearestMerchant, merchantNearby[i])
+	// }
 
-	return &nearestMerchant, nil
+	return items, nil
 }

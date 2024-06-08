@@ -93,6 +93,7 @@ type ListNearbyMerchantResult struct {
 	ImageUrl         string `json:"imageUrl" db:"image_url"`
 	Location         Location
 	CreatedAt        string `db:"created_at"`
+	Distance         float64
 }
 
 type ListNearbymerchantFinalResult struct {

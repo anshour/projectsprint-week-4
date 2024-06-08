@@ -17,6 +17,11 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		merchant.category as merchant_category, merchant.location_lat, 
 		merchant.location_long, merchant.image_url,
 		merchant.created_at as merchant_created_at,
+		( acos( cos( radians( %f ) ) 
+			* cos( radians( location_lat ) ) 
+			* cos( radians( location_long ) - radians(%f) ) 
+			+ sin( radians(%f) ) 
+			* sin( radians( location_lat ) ) ) ) AS distance,
 		item.id as item_id,
 		item.name as item_name,  
 		item.category as item_category,
@@ -27,6 +32,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 	JOIN merchant_items item ON item.merchant_id = merchant.id
 	WHERE 
 	merchant.id IN `
+	baseQuery = fmt.Sprintf(baseQuery, filters.Lat, filters.Long, filters.Lat)
 
 	clauseQuery := `SELECT id FROM merchants WHERE EXISTS (
 		SELECT 1 
@@ -108,6 +114,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			&merchant.Location.LocationLong,
 			&merchant.ImageUrl,
 			&merchant.CreatedAt,
+			&merchant.Distance,
 			&merchantItem.Id,
 			&merchantItem.Name,
 			&merchantItem.Category,
