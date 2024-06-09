@@ -1,12 +1,12 @@
 package entity
 
 type OrderItems struct {
-	ItemId   string `json:"itemId"`
+	ItemId   string `json:"itemId" validate:"required,uuid"`
 	Quantity int32  `json:"quantity"`
 }
 
 type orders struct {
-	MerchantId      string       `json:"merchantId"`
+	MerchantId      string       `json:"merchantId" validate:"required,uuid"`
 	IsStartingPoint bool         `json:"isStartingPoint"`
 	Items           []OrderItems `json:"items"`
 }

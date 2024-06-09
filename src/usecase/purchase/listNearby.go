@@ -1,10 +1,8 @@
 package purchaseUsecase
 
 import (
-	"fmt"
 	"log"
 	entity "projectsprintw4/src/entities"
-	"sort"
 )
 
 type Point struct {
@@ -34,6 +32,7 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 
 	merchantsMap := make(map[string]*entity.ListNearbymerchantFinalResult)
 	for _, merchant := range *merchants {
+
 		if _, exists := merchantsMap[merchant.Id]; !exists {
 			merchantsMap[merchant.Id] = &entity.ListNearbymerchantFinalResult{
 				Merchant: merchant,
@@ -61,17 +60,17 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 	}
 
 	// Sort locations by distance
-	sort.Slice(merchantsData, func(i, j int) bool {
-		return merchantsData[i].Merchant.Distance < merchantsData[j].Merchant.Distance
-	})
+	// sort.Slice(merchantsData, func(i, j int) bool {
+	// 	return merchantsData[i].Merchant.Distance < merchantsData[j].Merchant.Distance
+	// })
 
-	for i, merchant := range merchantsData {
-		if i >= p.Limit {
-			break
-		}
-		fmt.Printf("Location %d: ID=%s, Name=%s, Distance=%.2f km\n",
-			i+1, merchant.Merchant.Id, merchant.Merchant.Name, merchant.Merchant.Distance)
-	}
+	// for i, merchant := range merchantsData {
+	// 	if i >= p.Limit {
+	// 		break
+	// 	}
+	// 	fmt.Printf("Location %d: ID=%s, Name=%s, Distance=%.2f km\n",
+	// 		i+1, merchant.Merchant.Id, merchant.Merchant.Name, merchant.Merchant.Distance)
+	// }
 
 	return &merchantsData, nil
 }

@@ -8,7 +8,6 @@ import (
 
 func (r *sMerchantRepository) Save(p *entity.MerchantCreateParams) (string, error) {
 	geoHash := geohash.Encode(p.Location.Lat, p.Location.Long)
-	println("geoHash: ", geoHash)
 	query := "INSERT INTO merchants (name, category, image_url, location_lat, location_long, geo_hash) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
 
 	var id string

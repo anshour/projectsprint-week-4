@@ -11,7 +11,6 @@ import (
 
 func (uc *sPurchaseController) UserEstimation(c echo.Context) error {
 	var req entity.UserEstimationParams
-
 	if err := validator.BindValidate(c, &req); err != nil {
 		return c.JSON(http.StatusBadRequest, ErrorResponse{
 			Message: err.Error(),
@@ -28,6 +27,7 @@ func (uc *sPurchaseController) UserEstimation(c echo.Context) error {
 	data, err := uc.purchaseUsecase.UserEstimation(&req, UserId)
 
 	if err != nil {
+		println("err.Error(): ", err.Error())
 		if err.Error() == constants.ErrInvalidType {
 			return c.JSON(http.StatusNotFound, ErrorResponse{
 				Status:  false,

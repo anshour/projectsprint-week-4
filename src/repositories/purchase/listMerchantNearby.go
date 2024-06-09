@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	entity "projectsprintw4/src/entities"
-	"projectsprintw4/src/utils"
 	formatTime "projectsprintw4/src/utils/time"
 	"strconv"
 	"strings"
@@ -12,33 +11,37 @@ import (
 
 func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParams) (*[]entity.ListNearbyMerchantResult, error) {
 
-	baseQuery := `SELECT id, name, category, location_lat, location_long, created_at from merchants WHERE true`
-	// Print the generated SQL query and arguments
-	fmt.Printf("SQL Query: %s\n", baseQuery)
-	// fmt.Printf("Arguments: %v\n", args)
+	baseQuery := `SELECT id, name, category, location_lat, location_long, created_at,
+	(acos(
+		cos(radians($1)) * cos(radians(location_lat)) *
+		cos(radians(location_long) - radians($2)) +
+		sin(radians($1)) * sin(radians(location_lat))
+		)) AS distance
+	FROM merchants WHERE true`
 
 	conditions := []string{}
 	args := []interface{}{}
 	argCounter := 1
 
+	args = append(args, filters.Lat, filters.Long)
+
 	if filters.MerchantId != "" {
-		conditions = append(conditions, fmt.Sprintf("merchant.id = $%d", argCounter))
+		conditions = append(conditions, fmt.Sprintf("id = $%d", argCounter))
 		args = append(args, filters.MerchantId)
 		argCounter++
 	}
 
 	if filters.Name != "" {
-		conditions = append(conditions, fmt.Sprintf("merchant.name ILIKE $%d", argCounter))
+		conditions = append(conditions, fmt.Sprintf("name ILIKE $%d", argCounter))
 		args = append(args, "%"+filters.Name+"%")
 		argCounter++
 	}
 
 	if filters.MerchantCategory != "" {
-		conditions = append(conditions, fmt.Sprintf("merchant.category = $%d", argCounter))
+		conditions = append(conditions, fmt.Sprintf("category = $%d", argCounter))
 		args = append(args, filters.MerchantCategory)
 		argCounter++
 	}
-
 	if len(conditions) > 0 {
 		baseQuery += " AND " + strings.Join(conditions, " AND ")
 	}
@@ -50,19 +53,16 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 		args = append(args, filters.Offset)
 	}
 
+	baseQuery += " ORDER BY distance"
+	fmt.Printf("SQL Query: %s\n", baseQuery)
+	fmt.Printf("Arguments: %v\n", args)
 	rows, err := r.DB.Queryx(baseQuery, args...)
 	if err != nil {
 		log.Printf("Error finding merchants nearby: %s", err)
-		return nil, err
+		return &[]entity.ListNearbyMerchantResult{}, err
 	}
 
 	defer rows.Close()
-
-	hasRows := rows.Next()
-	if !hasRows {
-		fmt.Println("No data found")
-		return &[]entity.ListNearbyMerchantResult{}, nil
-	}
 
 	var merchants []entity.ListNearbyMerchantResult
 
@@ -74,9 +74,13 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 			&merchant.MerchantCategory,
 			&merchant.Location.LocationLat,
 			&merchant.Location.LocationLong,
-			&merchant.CreatedAt); err != nil {
+			&merchant.CreatedAt,
+			&merchant.Distance); err != nil {
 			log.Fatal(err)
 		}
+
+		fmt.Printf("ID=%s, Name=%s, Distance=%.2f km\n",
+			merchant.Id, merchant.Name, merchant.Distance)
 
 		merchant.CreatedAt, err = formatTime.FormatToISO8601WithNano(merchant.CreatedAt)
 
@@ -84,10 +88,6 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 			log.Printf("Error formatting date: %s", err)
 			continue
 		}
-
-		distance := utils.Haversine(filters.Lat, filters.Long, merchant.Location.LocationLat, merchant.Location.LocationLong)
-		merchant.Distance = distance
-		merchants = append(merchants, merchant)
 
 	}
 
