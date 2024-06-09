@@ -44,7 +44,7 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 	}
 
 	if filters.Offset == 0 {
-		filters.Offset = 5
+		filters.Offset = 0
 	} else {
 		baseQuery += " OFFSET $" + strconv.Itoa(len(args)+1)
 		args = append(args, filters.Offset)
