@@ -42,7 +42,7 @@ func (uc *sMerchantController) CreateItem(c echo.Context) error {
 			Message: "Invalid value for 'merchant id'",
 		})
 	}
-	itemId, err := uc.merchantUsecase.CreateItem(&entity.MerchantItemCreateParams{
+	item, err := uc.merchantUsecase.CreateItem(&entity.MerchantItemCreateParams{
 		Name:       req.Name,
 		Category:   req.Category,
 		Price:      req.Price,
@@ -58,7 +58,5 @@ func (uc *sMerchantController) CreateItem(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, map[string]any{
-		"itemId": itemId,
-	})
+	return c.JSON(http.StatusCreated, item)
 }
