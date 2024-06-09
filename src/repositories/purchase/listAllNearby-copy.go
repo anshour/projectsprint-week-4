@@ -39,7 +39,6 @@ func (r *sPurchaseRepository) ListAllNearbyX(filters *entity.ListNearbyParams, n
 		) ORDER BY id
 	) AND true`
 
-	// endQuery := fmt.Sprintf(`AND geo_hash ILIKE $1 || '%'`, "%"+targetGeohash+"%")
 	conditions := []string{}
 	args := []interface{}{}
 	argCounter := 1
@@ -79,14 +78,13 @@ func (r *sPurchaseRepository) ListAllNearbyX(filters *entity.ListNearbyParams, n
 	args = append(args, limit)
 
 	if filters.Offset == 0 {
-		filters.Offset = 0
+		filters.Offset = 5
 	} else {
 		baseQuery += " OFFSET $" + strconv.Itoa(len(args)+1)
 		args = append(args, filters.Offset)
 	}
 
 	// Print the generated SQL query and arguments
-	fmt.Printf("SQL Query: %s\n", baseQuery)
 	// fmt.Printf("Arguments: %v\n", args)
 	rows, err := r.DB.Queryx(baseQuery, args...)
 	if err != nil {

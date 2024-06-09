@@ -66,7 +66,7 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 	})
 
 	for i, merchant := range merchantsData {
-		if i >= 5 {
+		if i >= p.Limit {
 			break
 		}
 		fmt.Printf("Location %d: ID=%s, Name=%s, Distance=%.2f km\n",
