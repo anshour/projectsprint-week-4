@@ -15,11 +15,6 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 			m.id AS merchant_id,
 			m.location_lat AS merchant_location_lat,
 			m.location_long AS merchant_location_long,
-			( acos( cos( radians( $1 ) ) 
-			* cos( radians( location_lat ) ) 
-			* cos( radians( location_long ) - radians($2) ) 
-			+ sin( radians($1) ) 
-			* sin( radians( location_lat ) ) ) ) AS distance
 		FROM 
 			merchant_items mi
 		JOIN 

@@ -73,14 +73,23 @@ type ListOrderResultItems struct {
 }
 
 type ListNearbyMerchantItemResult struct {
-	Id        string `json:"itemId" db:"id"`
-	Name      string `json:"name" db:"item_name"`
-	Category  string `json:"productCategory" db:"item_category"`
-	Price     string `json:"price" db:"item_price"`
-	ImageUrl  string `json:"imageUrl" db:"item_image_url"`
-	CreatedAt string `json:"createdAt" db:"item_created_at"`
+	Id         string `json:"itemId" db:"id"`
+	MerchantId string `json:"merchantId" db:"merchant_id"`
+	Name       string `json:"name" db:"item_name"`
+	Category   string `json:"productCategory" db:"item_category"`
+	Price      int    `json:"price" db:"item_price"`
+	ImageUrl   string `json:"imageUrl" db:"item_image_url"`
+	CreatedAt  string `json:"createdAt" db:"item_created_at"`
 }
 
+type ListMerchantItem struct {
+	Id        string `json:"itemId"`
+	Category  string `json:"productCategory"`
+	Name      string `json:"name"`
+	Price     int    `json:"price"`
+	ImageUrl  string `json:"imageUrl"`
+	CreatedAt string `json:"createdAt"`
+}
 type Location struct {
 	LocationLat  float64 `json:"lat" db:"location_lat"`
 	LocationLong float64 `json:"long" db:"location_long"`
@@ -93,12 +102,13 @@ type ListNearbyMerchantResult struct {
 	ImageUrl         string `json:"imageUrl" db:"image_url"`
 	Location         Location
 	CreatedAt        string `db:"created_at"`
+	GeoHash          string
 	Distance         float64
 }
 
 type ListNearbymerchantFinalResult struct {
-	Merchant ListNearbyMerchantResult       `json:"merchant"`
-	Items    []ListNearbyMerchantItemResult `json:"items"`
+	Merchant ListNearbyMerchantResult `json:"merchant"`
+	Items    []ListMerchantItem       `json:"items"`
 }
 
 type ItemOrders struct {

@@ -60,6 +60,7 @@ type MerchantFindAllResult struct {
 	ImageUrl         string  `db:"image_url"`
 	LocationLat      float64 `db:"location_lat"`
 	LocationLong     float64 `db:"location_long"`
+	GeoHash          string  `db:"geo_hash"`
 	CreatedAt        string  `db:"created_at"`
 	UpdatedAt        string  `db:"updated_at"`
 }

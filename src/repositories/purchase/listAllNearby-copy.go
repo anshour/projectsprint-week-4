@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"log"
 	entity "projectsprintw4/src/entities"
+	"projectsprintw4/src/utils"
 	formatTime "projectsprintw4/src/utils/time"
+	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/mmcloughlin/geohash"
 )
 
-func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error) {
+func (r *sPurchaseRepository) ListAllNearbyX(filters *entity.ListNearbyParams, neighbors []string) (*[]entity.ListNearbymerchantFinalResult, error) {
 
 	baseQuery := `
 	SELECT 
@@ -17,11 +21,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		merchant.category as merchant_category, merchant.location_lat, 
 		merchant.location_long, merchant.image_url,
 		merchant.created_at as merchant_created_at,
-		( acos( cos( radians( %f ) ) 
-			* cos( radians( location_lat ) ) 
-			* cos( radians( location_long ) - radians(%f) ) 
-			+ sin( radians(%f) ) 
-			* sin( radians( location_lat ) ) ) ) AS distance,
+		merchant.geo_hash as geo_hash,
 		item.id as item_id,
 		item.name as item_name,  
 		item.category as item_category,
@@ -30,16 +30,16 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		item.created_at as item_created_at
 	FROM merchants merchant 
 	JOIN merchant_items item ON item.merchant_id = merchant.id
-	WHERE 
-	merchant.id IN `
-	baseQuery = fmt.Sprintf(baseQuery, filters.Lat, filters.Long, filters.Lat)
-
-	clauseQuery := `SELECT id FROM merchants WHERE EXISTS (
-		SELECT 1 
-		FROM merchant_items 
-		WHERE merchant_items.merchant_id = merchants.id
+	WHERE merchant.id IN (
+		SELECT id FROM merchants 
+		WHERE EXISTS (
+			SELECT 1 
+			FROM merchant_items 
+			WHERE merchant_items.merchant_id = merchants.id
+		) ORDER BY id
 	) AND true`
 
+	// endQuery := fmt.Sprintf(`AND geo_hash ILIKE $1 || '%'`, "%"+targetGeohash+"%")
 	conditions := []string{}
 	args := []interface{}{}
 	argCounter := 1
@@ -62,17 +62,20 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		argCounter++
 	}
 
-	if len(conditions) > 0 {
-		clauseQuery += " AND " + strings.Join(conditions, " AND ")
-	}
+	precision := uint(3) // Adjust precision as needed
+	targetGeohash := geohash.EncodeWithPrecision(filters.Lat, filters.Long, precision)
 
-	clauseQuery += " ORDER BY id" // Correctly place ORDER BY before LIMIT
+	baseQuery += " AND geo_hash ILIKE " + "'" + targetGeohash + "' || '%'"
+
+	if len(conditions) > 0 {
+		baseQuery += " AND " + strings.Join(conditions, " AND ")
+	}
 
 	limit := filters.Limit
 	if limit == 0 {
 		limit = 1000
 	}
-	clauseQuery += fmt.Sprintf(" LIMIT $%d", argCounter)
+	baseQuery += fmt.Sprintf(" LIMIT $%d", argCounter)
 	args = append(args, limit)
 
 	if filters.Offset == 0 {
@@ -82,12 +85,10 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 		args = append(args, filters.Offset)
 	}
 
-	finalQuery := baseQuery + `( ` + clauseQuery + ` );`
-
 	// Print the generated SQL query and arguments
-	// fmt.Printf("SQL Query: %s\n", finalQuery)
+	fmt.Printf("SQL Query: %s\n", baseQuery)
 	// fmt.Printf("Arguments: %v\n", args)
-	rows, err := r.DB.Queryx(finalQuery, args...)
+	rows, err := r.DB.Queryx(baseQuery, args...)
 	if err != nil {
 		log.Printf("Error finding merchants nearby: %s", err)
 		return nil, err
@@ -95,13 +96,13 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 
 	defer rows.Close()
 
-	merchantsMap := make(map[string]*entity.ListNearbymerchantFinalResult)
-
 	hasRows := rows.Next()
 	if !hasRows {
 		fmt.Println("No data found")
 		return &[]entity.ListNearbymerchantFinalResult{}, nil
 	}
+	merchantsMap := make(map[string]*entity.ListNearbymerchantFinalResult)
+
 	for rows.Next() {
 		var merchant entity.ListNearbyMerchantResult
 		var merchantItem entity.ListNearbyMerchantItemResult
@@ -114,7 +115,7 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			&merchant.Location.LocationLong,
 			&merchant.ImageUrl,
 			&merchant.CreatedAt,
-			&merchant.Distance,
+			&merchant.GeoHash,
 			&merchantItem.Id,
 			&merchantItem.Name,
 			&merchantItem.Category,
@@ -136,22 +137,34 @@ func (r *sPurchaseRepository) ListAllNearby(filters *entity.ListNearbyParams) (*
 			continue
 		}
 
+		distance := utils.Haversine(filters.Lat, filters.Long, merchant.Location.LocationLat, merchant.Location.LocationLong)
+		merchant.Distance = distance
+
 		if _, exists := merchantsMap[merchant.Id]; !exists {
 			merchantsMap[merchant.Id] = &entity.ListNearbymerchantFinalResult{
 				Merchant: merchant,
-				Items:    []entity.ListNearbyMerchantItemResult{},
+				Items:    []entity.ListMerchantItem{},
 			}
 		}
 
-		merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
+		// merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, merchantItem)
 
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
 	}
 
 	var merchants []entity.ListNearbymerchantFinalResult
 	for _, merchant := range merchantsMap {
+		fmt.Printf("looping: ID=%s, Name=%s, Distance=%f \n",
+			merchant.Merchant.Id, merchant.Merchant.Name, merchant.Merchant.Distance)
 		merchants = append(merchants, *merchant)
 	}
 
-	return &merchants, nil
+	sort.Slice(merchants, func(i, j int) bool {
+		return merchants[i].Merchant.Distance < merchants[j].Merchant.Distance
+	})
 
+	return &merchants, nil
 }

@@ -14,7 +14,8 @@ type PurchaseRepository interface {
 	FindOrders(*entity.ListOrderParams) (*[]entity.ListOrderResult, error)
 	UpdateOrderStatus(orderId string, status string) (err error)
 	GetOrderIdByEstimationId(estimationId string) (orderId string, err error)
-	ListAllNearby(*entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error)
+	ListMerchantNearby(*entity.ListNearbyParams) (*[]entity.ListNearbyMerchantResult, error)
+	GetItemMerchant([]string) (*[]entity.ListNearbyMerchantItemResult, error)
 	UserEstimation(*entity.UserEstimationRepoParams, string) (*entity.UserEstimationResult, error)
 }
 

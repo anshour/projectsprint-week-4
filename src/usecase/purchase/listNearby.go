@@ -1,7 +1,10 @@
 package purchaseUsecase
 
 import (
+	"fmt"
+	"log"
 	entity "projectsprintw4/src/entities"
+	"sort"
 )
 
 type Point struct {
@@ -9,47 +12,66 @@ type Point struct {
 }
 
 func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.ListNearbymerchantFinalResult, error) {
-	items, err := uc.purchaseRepo.ListAllNearby(p)
+
+	// get merchant based on nearest location sorted and calculated by haversine
+	merchants, err := uc.purchaseRepo.ListMerchantNearby(p)
+
 	if err != nil {
 		empty := make([]entity.ListNearbymerchantFinalResult, 0)
 		return &empty, err
 	}
 
-	// userCurrentLoc := haversine.Coord{Lat: p.Lat, Lon: p.Long}
+	var itemIds []string
+	for _, item := range *merchants {
+		itemIds = append(itemIds, item.Id)
+	}
 
-	// nearestMerchant := make([]entity.ListNearbymerchantFinalResult, 0, p.Limit)
-	// var merchantNearby []entity.ListNearbymerchantFinalResult
-	// visited := make(map[int]bool)
-	// currentLoc := userCurrentLoc
-	// for len(*items) > len(visited) {
-	// 	nearest := -1
-	// 	nearestDist := math.MaxFloat64
+	merchantItems, err := uc.purchaseRepo.GetItemMerchant(itemIds)
+	if err != nil {
+		// Handle the error appropriately, for example:
+		log.Fatalf("Failed to get item merchant: %v", err)
+	}
 
-	// 	for i, merchant := range *items {
-	// 		if visited[i] {
-	// 			continue
-	// 		}
-	// 		merchantLoc := haversine.Coord{Lat: merchant.Merchant.Location.LocationLat, Lon: merchant.Merchant.Location.LocationLong}
-	// 		_, dist := haversine.Distance(currentLoc, merchantLoc)
-	// 		if dist < nearestDist {
-	// 			println("merchant: ", merchant.Merchant.Id)
-	// 			nearest = i
-	// 			nearestDist = dist
-	// 			merchantNearby = append(merchantNearby, merchant)
-	// 		}
+	merchantsMap := make(map[string]*entity.ListNearbymerchantFinalResult)
+	for _, merchant := range *merchants {
+		if _, exists := merchantsMap[merchant.Id]; !exists {
+			merchantsMap[merchant.Id] = &entity.ListNearbymerchantFinalResult{
+				Merchant: merchant,
+				Items:    []entity.ListMerchantItem{},
+			}
+			for _, item := range *merchantItems {
+				if merchant.Id == item.MerchantId {
+					merchantsMap[merchant.Id].Items = append(merchantsMap[merchant.Id].Items, entity.ListMerchantItem{
+						Id:        item.Id,
+						Name:      item.Name,
+						Category:  item.Category,
+						Price:     item.Price,
+						ImageUrl:  item.ImageUrl,
+						CreatedAt: item.CreatedAt,
+					})
+				}
+			}
+		}
 
-	// 		if nearest == -1 {
-	// 			break
-	// 		}
+	}
 
-	// 		visited[nearest] = true
-	// 		currentLoc = merchantLoc
-	// 	}
+	var merchantsData []entity.ListNearbymerchantFinalResult
+	for _, merchant := range merchantsMap {
+		merchantsData = append(merchantsData, *merchant)
+	}
 
-	// }
-	// for i := len(merchantNearby) - 1; i >= 0; i-- {
-	// 	nearestMerchant = append(nearestMerchant, merchantNearby[i])
-	// }
+	// Sort locations by distance
+	sort.Slice(merchantsData, func(i, j int) bool {
+		return merchantsData[i].Merchant.Distance < merchantsData[j].Merchant.Distance
+	})
 
-	return items, nil
+	for i, merchant := range merchantsData {
+		if i >= 5 {
+			break
+		}
+		fmt.Printf("Location %d: ID=%s, Name=%s, Distance=%.2f km\n",
+			i+1, merchant.Merchant.Id, merchant.Merchant.Name, merchant.Merchant.Distance)
+	}
+
+	return &merchantsData, nil
 }
