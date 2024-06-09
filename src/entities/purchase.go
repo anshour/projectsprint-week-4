@@ -30,17 +30,17 @@ type ListOrderResult struct {
 }
 
 type OrderDetail struct {
-	MerchantDetail OrderDetailMerchant `json:"merchant"`
+	MerchantDetail OrderDetailMerchant    `json:"merchant"`
+	Items          []ListOrderResultItems `json:"items"`
 }
 
 type OrderDetailMerchant struct {
-	Name             string                 `json:"name"`
-	MerchantId       string                 `json:"merchantId"`
-	MerchantCategory string                 `json:"merchantCategory"`
-	ImageUrl         string                 `json:"imageUrl"`
-	Location         location               `json:"location"`
-	CreatedAt        string                 `json:"created_at"`
-	Items            []ListOrderResultItems `json:"items"`
+	Name             string   `json:"name"`
+	MerchantId       string   `json:"merchantId"`
+	MerchantCategory string   `json:"merchantCategory"`
+	ImageUrl         string   `json:"imageUrl"`
+	Location         location `json:"location"`
+	CreatedAt        string   `json:"created_at"`
 }
 
 type MerchantOrderQueryResult struct {

@@ -158,11 +158,12 @@ func (r *sPurchaseRepository) FindOrders(filters *entity.ListOrderParams) (*[]en
 		orderDetails := make([]entity.OrderDetail, 0)
 
 		for _, merchant := range merchantsByOrderId[orderId] {
-			merchant.Items = itemsByOrderIdMerchantId[orderId][merchant.MerchantId]
 			orderDetails = append(orderDetails, entity.OrderDetail{
 				MerchantDetail: merchant,
+				Items:          itemsByOrderIdMerchantId[orderId][merchant.MerchantId],
 			})
 		}
+
 		orders = append(orders, entity.ListOrderResult{
 			OrderId:      orderId,
 			OrderDetails: orderDetails,
