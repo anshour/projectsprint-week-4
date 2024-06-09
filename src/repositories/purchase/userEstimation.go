@@ -14,17 +14,17 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 			mi.price AS item_price,
 			m.id AS merchant_id,
 			m.location_lat AS merchant_location_lat,
-			m.location_long AS merchant_location_long,
+			m.location_long AS merchant_location_long
 		FROM 
 			merchant_items mi
 		JOIN 
 			merchants m ON m.id = mi.merchant_id
 		WHERE 
-			m.id = ANY($3)
-			AND mi.id = ANY($4)`
+			m.id = ANY($1)
+			AND mi.id = ANY($2)`
 
 	var merchantItems []*entity.MerchantBindResult
-	err := r.DB.Select(&merchantItems, query, p.Location.Lat, p.Location.Long, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
+	err := r.DB.Select(&merchantItems, query, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
 
 	if err != nil {
 		return nil, err
