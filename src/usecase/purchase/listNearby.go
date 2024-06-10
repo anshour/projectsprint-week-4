@@ -3,6 +3,7 @@ package purchaseUsecase
 import (
 	"log"
 	entity "projectsprintw4/src/entities"
+	"sort"
 )
 
 type Point struct {
@@ -60,9 +61,9 @@ func (uc *sPurchaseUsecase) ListNearby(p *entity.ListNearbyParams) (*[]entity.Li
 	}
 
 	// Sort locations by distance
-	// sort.Slice(merchantsData, func(i, j int) bool {
-	// 	return merchantsData[i].Merchant.Distance < merchantsData[j].Merchant.Distance
-	// })
+	sort.Slice(merchantsData, func(i, j int) bool {
+		return merchantsData[i].Merchant.Distance < merchantsData[j].Merchant.Distance
+	})
 
 	// for i, merchant := range merchantsData {
 	// 	if i >= p.Limit {
