@@ -21,7 +21,7 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 
 	conditions := []string{}
 	args := []interface{}{}
-	argCounter := 1
+	argCounter := 3
 
 	args = append(args, filters.Lat, filters.Long)
 
@@ -54,6 +54,14 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 	}
 
 	baseQuery += " ORDER BY distance"
+
+	if filters.Limit == 0 {
+		filters.Limit = 5
+	}
+
+	baseQuery += " LIMIT $" + strconv.Itoa(len(args)+1)
+	args = append(args, filters.Limit)
+
 	fmt.Printf("SQL Query: %s\n", baseQuery)
 	fmt.Printf("Arguments: %v\n", args)
 	rows, err := r.DB.Queryx(baseQuery, args...)
