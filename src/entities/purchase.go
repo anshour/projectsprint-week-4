@@ -103,7 +103,7 @@ type ListNearbyMerchantResult struct {
 	Location         Location
 	CreatedAt        string `db:"created_at"`
 	GeoHash          string
-	Distance         float64
+	Distance         float64 `db:"distance"`
 }
 
 type ListNearbymerchantFinalResult struct {

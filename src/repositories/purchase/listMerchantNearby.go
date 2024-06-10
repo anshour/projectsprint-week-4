@@ -78,8 +78,7 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 			&merchant.Distance); err != nil {
 			log.Fatal(err)
 		}
-
-		fmt.Printf("ID=%s, Name=%s, Distance=%.2f km\n",
+		fmt.Printf("ID=%s, Name=%s, Distance=%f km\n",
 			merchant.Id, merchant.Name, merchant.Distance)
 
 		merchant.CreatedAt, err = formatTime.FormatToISO8601WithNano(merchant.CreatedAt)
@@ -89,6 +88,7 @@ func (r *sPurchaseRepository) ListMerchantNearby(filters *entity.ListNearbyParam
 			continue
 		}
 
+		merchants = append(merchants, merchant)
 	}
 
 	if err := rows.Err(); err != nil {
