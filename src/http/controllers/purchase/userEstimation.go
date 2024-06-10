@@ -23,13 +23,47 @@ func (uc *sPurchaseController) UserEstimation(c echo.Context) error {
 			Status:  false,
 		})
 	}
-	UserId, _ := c.Get("userId").(string)
+	hasStart := false
+	startingPointCount := 0
+	for _, order := range req.Orders {
+		if order.IsStartingPoint {
+			hasStart = true
+			startingPointCount++
+		}
+	}
+	if !hasStart {
+		println(constants.ErrStartingPoint)
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Status:  false,
+			Message: constants.ErrStartingPoint,
+		})
+	}
+	if startingPointCount == len(req.Orders) {
+		println(constants.ErrStartingPoint)
+		return c.JSON(http.StatusBadRequest, ErrorResponse{
+			Status:  false,
+			Message: constants.ErrStartingPoint,
+		})
+	}
+	UserId, ok := c.Get("userId").(string)
+	if !ok {
+		println("UserId is not set or not a string")
+	} else {
+		println("User: ", UserId)
+	}
 	data, err := uc.purchaseUsecase.UserEstimation(&req, UserId)
 
 	if err != nil {
 		println("err.Error(): ", err.Error())
+
 		if err.Error() == constants.ErrInvalidType {
 			return c.JSON(http.StatusNotFound, ErrorResponse{
+				Status:  false,
+				Message: err.Error(),
+			})
+		}
+		if err == constants.ErrTooFarLocation {
+			return c.JSON(http.StatusBadRequest, ErrorResponse{
 				Status:  false,
 				Message: err.Error(),
 			})

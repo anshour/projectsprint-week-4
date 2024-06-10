@@ -7,16 +7,16 @@ import (
 	"projectsprintw4/src/utils/password"
 )
 
-func (u *sUserUsecase) Register(p *entity.UserSaveParam) (token string, err error) {
+func (u *sUserUsecase) Register(p *entity.UserSaveParam) (token string, userId string, err error) {
 
 	isExist, err := u.userRepo.CheckDataExist(p)
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if isExist {
-		return "", constants.ErrUsernameAlreadyExist
+		return "", "", constants.ErrUsernameAlreadyExist
 	}
 
 	//TODO: VALIDATE EMAIL IS EXIST WITHIN THE SAME USER ROLE
@@ -31,7 +31,7 @@ func (u *sUserUsecase) Register(p *entity.UserSaveParam) (token string, err erro
 	})
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	token = jwt.Generate(&jwt.TokenPayload{
@@ -39,5 +39,5 @@ func (u *sUserUsecase) Register(p *entity.UserSaveParam) (token string, err erro
 		Role:   user.Role,
 	})
 
-	return token, nil
+	return token, user.Id, nil
 }

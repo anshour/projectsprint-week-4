@@ -11,7 +11,7 @@ type sUserUsecase struct {
 
 type UserUsecase interface {
 	Login(*entity.UserLoginUsecaseParams) (string, error)
-	Register(*entity.UserSaveParam) (string, error)
+	Register(*entity.UserSaveParam) (string, string, error)
 }
 
 func New(userRepo repository.UserRepository) UserUsecase {

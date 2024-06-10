@@ -11,8 +11,8 @@ func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams, userI
 	merchantIds := []string{}
 	itemIds := []string{}
 	itemQuantityMap := make(map[string]int32)
-
 	for _, order := range p.Orders {
+
 		if !validator.IsValidUUID(order.MerchantId) {
 			println(constants.ErrInvalidType)
 			return nil, errors.New(constants.ErrInvalidType)

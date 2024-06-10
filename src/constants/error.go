@@ -13,9 +13,11 @@ var ErrWrongPassword = errors.New("wrong password verification")
 var ErrEmptyUserId = errors.New("Error Empty user id")
 var ErrUsernameAlreadyExist = errors.New("username or email already exist")
 var ErrMissingMerchantItem = errors.New("one of merchant or item not exist")
+var ErrTooFarLocation = errors.New("one of item has too far location")
 var ErrNoRowsResultText = "sql: no rows in result set"
 var ErrErrorParsing = "Error parsing lat, long"
 var ErrInvalidType = "invalid type"
+var ErrStartingPoint = "need one starting point"
 var ErrNoRowsResult = errors.New(ErrNoRowsResultText)
 
 const (

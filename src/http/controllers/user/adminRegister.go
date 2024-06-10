@@ -25,7 +25,7 @@ func (uc *sUserController) AdminRegister(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, ErrorResponse{Message: err.Error()})
 	}
 
-	token, err := uc.userUsecase.Register(&entity.UserSaveParam{
+	token, userId, err := uc.userUsecase.Register(&entity.UserSaveParam{
 		Username: req.Username,
 		Password: req.Password,
 		Email:    req.Email,
@@ -43,6 +43,8 @@ func (uc *sUserController) AdminRegister(c echo.Context) error {
 		log.Println(err.Error())
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Message: err.Error()})
 	}
+	c.Set("userId", userId)
+	c.Set("role", entity.ADMIN_ROLE)
 
 	return c.JSON(http.StatusCreated, map[string]any{
 		"token": token,

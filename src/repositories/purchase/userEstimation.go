@@ -1,6 +1,7 @@
 package purchaseRepository
 
 import (
+	"fmt"
 	"projectsprintw4/src/constants"
 	entity "projectsprintw4/src/entities"
 
@@ -8,23 +9,29 @@ import (
 )
 
 func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams, userId string) (*entity.UserEstimationResult, error) {
+
 	query := `
 		SELECT 
 			mi.id AS item_id,
 			mi.price AS item_price,
 			m.id AS merchant_id,
 			m.location_lat AS merchant_location_lat,
-			m.location_long AS merchant_location_long
+			m.location_long AS merchant_location_long,
+			(acos(
+				cos(radians($1)) * cos(radians(m.location_lat)) *
+				cos(radians(m.location_long) - radians($2)) +
+				sin(radians($1)) * sin(radians(m.location_lat))
+			) * 6371) AS distance
 		FROM 
 			merchant_items mi
 		JOIN 
 			merchants m ON m.id = mi.merchant_id
 		WHERE 
-			m.id = ANY($1)
-			AND mi.id = ANY($2)`
+			m.id = ANY($3)
+			AND mi.id = ANY($4)`
 
 	var merchantItems []*entity.MerchantBindResult
-	err := r.DB.Select(&merchantItems, query, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
+	err := r.DB.Select(&merchantItems, query, p.Location.Lat, p.Location.Long, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
 
 	if err != nil {
 		return nil, err
@@ -34,8 +41,14 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 		return nil, constants.ErrMissingMerchantItem
 	}
 
-	querySaveOrder := `INSERT INTO orders (user_id, order_status, location_lat, location_long) VALUES ($1, $2, $3, $4) RETURNING id`
+	for _, item := range merchantItems {
+		fmt.Printf("Distance=%f km\n", item.Distance)
+		if item.Distance > 3 {
+			return nil, constants.ErrTooFarLocation
+		}
+	}
 
+	querySaveOrder := `INSERT INTO orders (user_id, order_status, location_lat, location_long) VALUES ($1, $2, $3, $4) RETURNING id`
 	var orderId string
 	if userId != "" {
 		err = r.DB.QueryRowx(querySaveOrder, userId, constants.DRAFT, p.Location.Lat, p.Location.Long).Scan(&orderId)
@@ -48,7 +61,6 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 		println(constants.ErrEmptyUserId)
 		return nil, constants.ErrEmptyUserId
 	}
-
 	var totalPrice int32
 	for _, item := range merchantItems {
 		querySaveMerchantItem := `INSERT INTO merchant_orders (order_id, merchant_id, item_id, item_price, quantity) VALUES ($1, $2, $3, $4, $5)`
