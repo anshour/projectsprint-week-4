@@ -1,7 +1,6 @@
 package purchaseUsecase
 
 import (
-	"errors"
 	"projectsprintw4/src/constants"
 	entity "projectsprintw4/src/entities"
 	"projectsprintw4/src/utils/validator"
@@ -13,16 +12,22 @@ func (uc *sPurchaseUsecase) UserEstimation(p *entity.UserEstimationParams, userI
 	itemQuantityMap := make(map[string]int32)
 	for _, order := range p.Orders {
 
+		if order.MerchantId == "" {
+			return nil, constants.ErrEmptyStringUUID
+		}
+
 		if !validator.IsValidUUID(order.MerchantId) {
-			println(constants.ErrInvalidType)
-			return nil, errors.New(constants.ErrInvalidType)
+			return nil, constants.ErrInvalidUUID
 
 		}
 		merchantIds = append(merchantIds, order.MerchantId)
 		for _, item := range order.Items {
+			if item.ItemId == "" {
+				return nil, constants.ErrEmptyStringUUID
+			}
+
 			if !validator.IsValidUUID(item.ItemId) {
-				println(constants.ErrInvalidType)
-				return nil, errors.New(constants.ErrInvalidType)
+				return nil, constants.ErrInvalidUUID
 
 			}
 			itemIds = append(itemIds, item.ItemId)

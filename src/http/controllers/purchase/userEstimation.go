@@ -50,9 +50,14 @@ func (uc *sPurchaseController) UserEstimation(c echo.Context) error {
 	data, err := uc.purchaseUsecase.UserEstimation(&req, UserId)
 
 	if err != nil {
-		println("err.Error(): ", err.Error())
+		if err == constants.ErrEmptyStringUUID {
+			return c.JSON(http.StatusBadRequest, ErrorResponse{
+				Status:  false,
+				Message: err.Error(),
+			})
+		}
 
-		if err.Error() == constants.ErrInvalidType {
+		if err == constants.ErrInvalidUUID {
 			return c.JSON(http.StatusNotFound, ErrorResponse{
 				Status:  false,
 				Message: err.Error(),
