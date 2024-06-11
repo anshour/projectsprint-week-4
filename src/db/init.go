@@ -34,6 +34,8 @@ func Init() *sqlx.DB {
 		panic(err.Error())
 	}
 
+	fmt.Println("Database connected!")
+
 	db.SetMaxOpenConns(100)
 	db.SetMaxIdleConns(90)
 	db.SetConnMaxIdleTime(time.Second * 5)
