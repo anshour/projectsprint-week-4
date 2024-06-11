@@ -84,5 +84,4 @@ type MerchantBindResult struct {
 	Long       float64 `db:"merchant_location_long"`
 	ItemId     string  `db:"item_id"`
 	Price      int32   `db:"item_price"`
-	Distance   float64 `db:"distance"`
 }
