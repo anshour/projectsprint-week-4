@@ -36,5 +36,5 @@ func main() {
 
 	v1.MountAll()
 
-	e.Logger.Fatal(e.Start("localhost:8080"))
+	e.Logger.Fatal(e.Start(":8080"))
 }
