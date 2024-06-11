@@ -33,10 +33,7 @@ func (uc *sPurchaseController) PurchaseOrder(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, SuccessResponse{
-		Message: "Purchase order success",
-		Data: map[string]any{
-			"orderId": orderId,
-		},
+	return c.JSON(http.StatusCreated, map[string]any{
+		"orderId": orderId,
 	})
 }
