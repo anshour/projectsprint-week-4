@@ -40,3 +40,7 @@ jobs:
           aws ecr batch-delete-image --repository-name ${{secrets.AWS_ECR_REPO}} --image-ids imageTag=$IMAGE_TAG
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Force New Deployment on ECS
+        run: |
+          aws ecs update-service --cluster projectsprint --service dionedo4-service --force-new-deployment
