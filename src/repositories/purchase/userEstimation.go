@@ -1,9 +1,9 @@
 package purchaseRepository
 
 import (
-	"fmt"
 	"projectsprintw4/src/constants"
 	entity "projectsprintw4/src/entities"
+	"projectsprintw4/src/utils"
 
 	"github.com/lib/pq"
 )
@@ -16,22 +16,17 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 			mi.price AS item_price,
 			m.id AS merchant_id,
 			m.location_lat AS merchant_location_lat,
-			m.location_long AS merchant_location_long,
-			(acos(
-				cos(radians($1)) * cos(radians(m.location_lat)) *
-				cos(radians(m.location_long) - radians($2)) +
-				sin(radians($1)) * sin(radians(m.location_lat))
-			) * 6371) AS distance
+			m.location_long AS merchant_location_long
 		FROM 
 			merchant_items mi
 		JOIN 
 			merchants m ON m.id = mi.merchant_id
 		WHERE 
-			m.id = ANY($3)
-			AND mi.id = ANY($4)`
+			m.id = ANY($1)
+			AND mi.id = ANY($2)`
 
 	var merchantItems []*entity.MerchantBindResult
-	err := r.DB.Select(&merchantItems, query, p.Location.Lat, p.Location.Long, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
+	err := r.DB.Select(&merchantItems, query, pq.Array(p.MerchantIds), pq.Array(p.ItemIds))
 
 	if err != nil {
 		return nil, err
@@ -41,11 +36,28 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 		return nil, constants.ErrMissingMerchantItem
 	}
 
+	locations := make([]entity.Location, 0)
+
 	for _, item := range merchantItems {
-		fmt.Printf("Distance=%f km\n", item.Distance)
-		if item.Distance > 3 {
-			return nil, constants.ErrTooFarLocation
-		}
+		locations = append(locations, entity.Location{
+			LocationLat:  item.Lat,
+			LocationLong: item.Long,
+		})
+	}
+
+	//Append the user location
+	locations = append(locations, entity.Location{
+		LocationLat:  p.Location.Lat,
+		LocationLong: p.Location.Long,
+	})
+
+	isWithin3Km2, err := utils.IsWithin3Km2(locations)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isWithin3Km2 {
+		return nil, constants.ErrTooFarLocation
 	}
 
 	querySaveOrder := `INSERT INTO orders (user_id, order_status, location_lat, location_long) VALUES ($1, $2, $3, $4) RETURNING id`
@@ -61,6 +73,7 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 		println(constants.ErrEmptyUserId)
 		return nil, constants.ErrEmptyUserId
 	}
+
 	var totalPrice int32
 	for _, item := range merchantItems {
 		querySaveMerchantItem := `INSERT INTO merchant_orders (order_id, merchant_id, item_id, item_price, quantity) VALUES ($1, $2, $3, $4, $5)`
@@ -77,7 +90,12 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 
 	var estimationId string
 	querySaveEstimations := `INSERT INTO estimations (order_id, total_price, estimation_minutes) VALUES ($1, $2, $3) RETURNING id`
-	estimationMinutes := 0 //TODO:FIX
+	_, distance, err := utils.NearestNeighborTSP(locations)
+	if err != nil {
+		return nil, err
+	}
+	estimationMinutes := utils.EstimatedDeliveryTimeInMinutes(distance)
+
 	err = r.DB.QueryRowx(querySaveEstimations, orderId, totalPrice, estimationMinutes).Scan(&estimationId)
 	if err != nil {
 		println("Error in saving to estimations")
@@ -89,5 +107,4 @@ func (r *sPurchaseRepository) UserEstimation(p *entity.UserEstimationRepoParams,
 		EstimationDelivery: int32(estimationMinutes),
 		EstimationId:       estimationId,
 	}, nil
-
 }
