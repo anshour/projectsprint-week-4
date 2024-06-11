@@ -40,7 +40,7 @@ type OrderDetailMerchant struct {
 	MerchantCategory string   `json:"merchantCategory"`
 	ImageUrl         string   `json:"imageUrl"`
 	Location         location `json:"location"`
-	CreatedAt        string   `json:"created_at"`
+	CreatedAt        string   `json:"createdAt"`
 }
 
 type MerchantOrderQueryResult struct {
