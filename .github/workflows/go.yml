@@ -22,11 +22,21 @@ jobs:
         id: login-pf-aws-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build Docker Image and Push to Amazon ECR
+      - name: Build Docker Image with tag github sha and Push to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{secrets.AWS_ECR_REPO}}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Build Docker Image with tag 'latest' and Push to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{secrets.AWS_ECR_REPO}}
+          IMAGE_TAG: latest
+        run: |
+          aws ecr batch-delete-image --repository-name ${{secrets.AWS_ECR_REPO}} --image-ids imageTag=$IMAGE_TAG
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
