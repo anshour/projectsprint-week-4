@@ -135,8 +135,12 @@ func (r *sPurchaseRepository) ListAllNearbyX(filters *entity.ListNearbyParams, n
 			continue
 		}
 
-		distance := utils.Haversine(filters.Lat, filters.Long, merchant.Location.LocationLat, merchant.Location.LocationLong)
+		distance, err := utils.Haversine(filters.Lat, filters.Long, merchant.Location.LocationLat, merchant.Location.LocationLong)
 		merchant.Distance = distance
+
+		if err != nil {
+			return nil, err
+		}
 
 		if _, exists := merchantsMap[merchant.Id]; !exists {
 			merchantsMap[merchant.Id] = &entity.ListNearbymerchantFinalResult{
