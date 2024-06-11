@@ -49,8 +49,5 @@ func (uc *sPurchaseController) ListOrder(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, SuccessResponse{
-		Message: "Order list",
-		Data:    orders,
-	})
+	return c.JSON(http.StatusOK, orders)
 }
