@@ -28,3 +28,6 @@ go run main.go
 
 Specification App
 https://www.notion.so/dionfananie/BeliMang-3680606d0cfa4b1c875fc13dd27a2eab
+
+Test K6
+https://github.com/dionfananie/BeliMangTestCasesPB2W4
