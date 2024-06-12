@@ -1,6 +1,7 @@
 # BeliMang Backend Service
 
-This is a backend service that provides a RESTful API.
+This is a backend service that provides api for ride hailing food order online.
+for calculation distance using haversine, NearestTSP below 3km
 
 ## Getting Started
 
@@ -9,6 +10,7 @@ This is a backend service that provides a RESTful API.
 - Go 1.22
 - Postgres
 - Golang Migrate CLI
+- Docker
 
 ### Installation
 
@@ -23,3 +25,6 @@ migrate -database "postgres://postgres:password@localhost:5432/belimangdb?sslmod
 ```sh
 go run main.go
 ```
+
+Specification App
+https://www.notion.so/dionfananie/BeliMang-3680606d0cfa4b1c875fc13dd27a2eab
